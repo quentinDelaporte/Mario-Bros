@@ -1,6 +1,6 @@
 # Mario Bros
    
- ## I.Fonctionnalitées implémenté.  
+ ## I.Fonctionnalitées implémentées.  
    
 -Creation de la fenetre de jeu  
 -Animation du personnage  
