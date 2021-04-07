@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.5" tiledversion="1.5.0" orientation="orthogonal" renderorder="right-down" width="200" height="50" tilewidth="16" tileheight="16" infinite="0" nextlayerid="5" nextobjectid="14">
+<map version="1.5" tiledversion="1.5.0" orientation="orthogonal" renderorder="right-down" width="200" height="50" tilewidth="16" tileheight="16" infinite="0" nextlayerid="5" nextobjectid="15">
  <tileset firstgid="1" source="DS DSi - New Super Mario Bros - Desert.tsx"/>
  <tileset firstgid="6894" source="DS DSi - New Super Mario Bros - Grassland and Sky (1).tsx"/>
  <tileset firstgid="27374" source="Beach Extended.tsx"/>
@@ -124,5 +124,8 @@
   <object id="11" x="966.583" y="692.333" width="34.5833" height="112.917"/>
   <object id="12" x="1046.83" y="677.667" width="34.3333" height="126.833"/>
   <object id="13" x="1142" y="675.333" width="307.083" height="133.417"/>
+  <object id="14" x="575" y="628.5">
+   <polygon points="0,0 130,31.5 128.5,82 -29.5,84"/>
+  </object>
  </objectgroup>
 </map>

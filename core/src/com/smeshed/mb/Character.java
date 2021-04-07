@@ -14,17 +14,28 @@ public class Character {
     private int height;
     private Rectangle hitbox;
     private CharacterEtat etat;
+    private CharacterFacing facing;
     private FileHandle marioStandStatic;
     private Anim marioStaticLeft;
+    private static final long LONG_JUMP_PRESS = 150l;
+    private static final float ACCELERATION = 20f;
+    private static final float GRAVITY = -20f;
+    private static final float MAX_JUMP_SPEED = 7f;
+    private static final float DAMP = 0.90f;
+    private static final float MAX_VEL = 4f;
 
     public enum CharacterEtat {
-        STATICLEFT, STATICRIGHT, JUMPLEFT, JUMPRIGHT, JUMPSTATICLEFT, JUMPSTATICRIGHT, WALKLEFT, WALKRIGHT, RUNLEFT,
-        RUNRIGHT, FALL, DEAD;
+        STATIC, JUMP, WALK, RUN, FALL, DEAD;
+    }
+
+    public enum CharacterFacing {
+        LEFT, RIGHT
     }
 
     public Character(int width, int height, int x, int y) {
 
-        etat = CharacterEtat.STATICLEFT;
+        etat = CharacterEtat.STATIC;
+        facing = CharacterFacing.LEFT;
 
         this.x = x;
         this.y = y;
@@ -37,9 +48,9 @@ public class Character {
         marioStandStatic = Gdx.files.internal("./images/mario/mario-static-left.png");
         marioStaticLeft = new Anim(marioStandStatic, 5, 1, 0.1f);
 
-        if (etat == CharacterEtat.STATICLEFT) {
-            batch.draw(marioStaticLeft.getAnimation(stateTime), 180, 250, this.width, this.height);
-        }
+        // if (etat == CharacterEtat.STATICLEFT) {
+        batch.draw(marioStaticLeft.getAnimation(stateTime), 180, 250, this.width, this.height);
+        // }
         hitbox = new Rectangle(x, y, this.width, this.height);
 
     }
@@ -60,8 +71,16 @@ public class Character {
         return etat;
     }
 
+    public CharacterFacing getFacing() {
+        return facing;
+    }
+
     public void setEtat(CharacterEtat etat) {
         this.etat = etat;
+    }
+
+    public void setFacing(CharacterFacing facing) {
+        this.facing = facing;
     }
 
     public int getY() {
@@ -78,6 +97,40 @@ public class Character {
 
     public void setX(int i) {
         x = i;
+    }
+
+    public boolean isDead() {
+        if (y <= 0) {
+            System.out.println("Lose");
+
+            etat = CharacterEtat.DEAD;
+            return true;
+        }
+        return false;
+    }
+
+    public static long getLongJumpPress() {
+        return LONG_JUMP_PRESS;
+    }
+
+    public static float getAcceleration() {
+        return ACCELERATION;
+    }
+
+    public static float getGravity() {
+        return GRAVITY;
+    }
+
+    public static float getMaxJumpSpeed() {
+        return MAX_JUMP_SPEED;
+    }
+
+    public static float getDamp() {
+        return DAMP;
+    }
+
+    public static float getMaxVel() {
+        return MAX_VEL;
     }
 
 }
