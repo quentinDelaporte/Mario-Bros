@@ -1,11 +1,15 @@
 package com.smeshed.mb;
 
 import com.badlogic.gdx.maps.MapLayer;
+import com.badlogic.gdx.maps.MapObjects;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.maps.MapProperties;
+import com.badlogic.gdx.maps.objects.RectangleMapObject;
 
 public class Map {
     private TiledMapRenderer tiledMapRenderer;
@@ -13,6 +17,7 @@ public class Map {
     private int tilePixelWidth;
     private int tilePixelHeight;
     private int groundHeight;
+    private int mapHeight;
 
     public Map(String mapPath, int groundHeight) {
         tiledMap = new TmxMapLoader().load(mapPath);
@@ -22,6 +27,12 @@ public class Map {
         tilePixelHeight = propMap.get("tileheight", Integer.class) * propMap.get("height", Integer.class);
         this.groundHeight = groundHeight;
 
+        mapHeight = propMap.get("height", Integer.class);
+
+    }
+
+    public int getHeight() {
+        return mapHeight;
     }
 
     public TiledMap getTiledMap() {
@@ -46,5 +57,12 @@ public class Map {
 
     public MapLayer getCollisionLayer(int i) {
         return tiledMap.getLayers().get(i);
+    }
+
+    public MapObjects getCollisionTile(int collisionLayer) {
+        MapLayer collisionObjectLayer = tiledMap.getLayers().get(collisionLayer);
+        MapObjects objects = collisionObjectLayer.getObjects();
+
+        return objects;
     }
 }

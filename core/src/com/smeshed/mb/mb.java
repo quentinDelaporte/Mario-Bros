@@ -1,48 +1,34 @@
 package com.smeshed.mb;
 
-import java.awt.Dimension;
-import java.awt.Toolkit;
-
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.maps.MapObjects;
+import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
-import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.math.Intersector;
+import com.badlogic.gdx.math.Rectangle;
 
 public class mb extends ApplicationAdapter {
 	private SpriteBatch batch;
-	private float stateTime;
-	private Anim marioStaticLeft;
 	private Character mario;
-	private Texture staticMario;
-	private Dimension screenSize;
-	private int layerToRender[] = { 0 };
-	private int screenHeight, screenWidth;
+	private int layerToRender[] = { 0, 1 };
 	private OrthographicCamera camera;
-	private CharacterEtat etatMario;
 	private TiledMapRenderer tiledMapRenderer;
 	private Map map01;
+	private float stateTime;
+	private MapObjects collisionObjects;
 
 	@Override
 	public void create() {
 		batch = new SpriteBatch();
 		drawCamera();
-		FileHandle marioStandStatic = Gdx.files.internal("./images/mario/mario-static-left.png");
-		marioStaticLeft = new Anim(marioStandStatic, 5, 1, 0.1f);
-		staticMario = new Texture("./images/mario/mario-static-left.png");
-
-		mario = new Character(staticMario, 25, 25);
-		etatMario = CharacterEtat.STATICLEFT;
-
-		screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		screenHeight = screenSize.height;
-		screenWidth = screenSize.width;
-
-		map01 = new Map("./maps/map01.tmx", 192);
+		mario = new Character(25, 25, 180, 250);
+		map01 = new Map("./maps/map1-1.tmx", 192);
+		collisionObjects = map01.getCollisionTile(2);
 		tiledMapRenderer = map01.getTiledMapRenderer();
 	}
 
@@ -51,12 +37,13 @@ public class mb extends ApplicationAdapter {
 		stateTime += Gdx.graphics.getDeltaTime();
 		Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		camera.update();
 		tiledMapRenderer.setView(camera);
 		tiledMapRenderer.render(layerToRender);
 		batch.begin();
-		drawingMario();
+		mario.draw(batch, stateTime);
+
 		keyPressed();
+		camera.update();
 		batch.end();
 	}
 
@@ -66,17 +53,51 @@ public class mb extends ApplicationAdapter {
 	}
 
 	private void keyPressed() {
-		if (Gdx.input.isKeyPressed(Keys.LEFT)) {
-			camera.position.x = camera.position.x - Gdx.graphics.getDeltaTime() * 300;
+		Rectangle hitbox = mario.getHitbox();
+
+		if (Gdx.input.isKeyPressed(Keys.UP) && Gdx.input.isKeyPressed(Keys.LEFT)) {
+			hitbox.x -= 4;
+			hitbox.y += 4;
+			if (!collisionDetection(hitbox)) {
+				camera.position.x = camera.position.x - 4;
+				mario.setX(mario.getX() - 4);
+				camera.position.y = camera.position.y + 4;
+				mario.setY(mario.getY() + 4);
+			}
+		} else if (Gdx.input.isKeyPressed(Keys.UP) && Gdx.input.isKeyPressed(Keys.RIGHT)) {
+			hitbox.x += 4;
+			hitbox.y += 4;
+			if (!collisionDetection(hitbox)) {
+				camera.position.x = camera.position.x + 4;
+				mario.setX(mario.getX() + 4);
+				camera.position.y = camera.position.y + 4;
+				mario.setY(mario.getY() + 4);
+			}
+		} else if (Gdx.input.isKeyPressed(Keys.LEFT)) {
+			hitbox.x -= 4;
+			if (!collisionDetection(hitbox)) {
+				camera.position.x = camera.position.x - 4;
+				mario.setX(mario.getX() - 4);
+			}
 		} else if (Gdx.input.isKeyPressed(Keys.RIGHT)) {
-			camera.position.x = camera.position.x + Gdx.graphics.getDeltaTime() * 300;
-		} /*
-			 * else if (Gdx.input.isKeyPressed(Keys.DOWN)) { camera.position.y =
-			 * camera.position.y - Gdx.graphics.getDeltaTime() * 300; } else if
-			 * (Gdx.input.isKeyPressed(Keys.UP)) { camera.position.y = camera.position.y +
-			 * Gdx.graphics.getDeltaTime() * 300; }
-			 */
-		camera.update();
+			hitbox.x += 4;
+			if (!collisionDetection(hitbox)) {
+				camera.position.x = camera.position.x + 4;
+				mario.setX(mario.getX() + 4);
+			}
+		} else if (Gdx.input.isKeyPressed(Keys.DOWN)) {
+			hitbox.y -= 4;
+			if (!collisionDetection(hitbox)) {
+				camera.position.y = camera.position.y - 4;
+				mario.setY(mario.getY() - 4);
+			}
+		} else if (Gdx.input.isKeyPressed(Keys.UP)) {
+			hitbox.y += 4;
+			if (!collisionDetection(hitbox)) {
+				camera.position.y = camera.position.y + 4;
+				mario.setY(mario.getY() + 4);
+			}
+		}
 	}
 
 	private void drawCamera() {
@@ -87,7 +108,19 @@ public class mb extends ApplicationAdapter {
 		camera.update();
 	}
 
-	public void drawingMario() {
-		mario.dessine(batch, marioStaticLeft.getAnimation(stateTime), 250, 180);
+	public boolean collisionDetection(Rectangle hitbox) {
+		for (RectangleMapObject rectangleObject : collisionObjects.getByType(RectangleMapObject.class)) {
+
+			Rectangle rectangle = rectangleObject.getRectangle();
+			// rectangle.x = rectangle.x - map01.getHeight();
+			System.out.println(rectangle);
+
+			if (Intersector.overlaps(rectangle, hitbox)) {
+				System.out.println("collision - " + hitbox);
+				return true;
+			}
+		}
+		return false;
 	}
+
 }

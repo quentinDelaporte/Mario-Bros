@@ -1,51 +1,47 @@
 package com.smeshed.mb;
 
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 
-
 public class Character {
-    private Texture texture;
+    private TextureRegion texture;
+    private int y;
+    private int x;
     private int width;
     private int height;
     private Rectangle hitbox;
-    private boolean walkingToLeft, walkingToRight, jumpingToLeft, jumpingToRight, statiq, dead;
+    private CharacterEtat etat;
+    private FileHandle marioStandStatic;
+    private Anim marioStaticLeft;
 
-    public Character(Texture texture, int width, int height) {
-        this.texture = texture;
+    public enum CharacterEtat {
+        STATICLEFT, STATICRIGHT, JUMPLEFT, JUMPRIGHT, JUMPSTATICLEFT, JUMPSTATICRIGHT, WALKLEFT, WALKRIGHT, RUNLEFT,
+        RUNRIGHT, FALL, DEAD;
+    }
+
+    public Character(int width, int height, int x, int y) {
+
+        etat = CharacterEtat.STATICLEFT;
+
+        this.x = x;
+        this.y = y;
         this.height = height;
         this.width = width;
-        this.walkingToLeft = false;
-        this.walkingToRight = false;
-        this.jumpingToLeft = false;
-        this.jumpingToRight = false;
-        this.statiq = true;
-        this.dead = false;
     }
 
-    public void dessine(SpriteBatch batch, int posx, int posy) {
-        batch.draw(texture, posx, posy, this.width, this.height);
-        hitbox = new Rectangle(posx, posy, this.width, this.height);
-    }
+    public void draw(SpriteBatch batch, float stateTime) {
 
-    public void dessine(SpriteBatch batch, TextureRegion currentFrame, int posx, int posy) {
-        batch.draw(currentFrame, posx, posy, this.width, this.height);
-        hitbox = new Rectangle(posx, posy, this.width, this.height);
-    }
+        marioStandStatic = Gdx.files.internal("./images/mario/mario-static-left.png");
+        marioStaticLeft = new Anim(marioStandStatic, 5, 1, 0.1f);
 
-    public void dessine(SpriteBatch batch, Texture texture, int posx, int posy) {
-        batch.draw(texture, posx, posy, this.width, this.height);
-        hitbox = new Rectangle(posx, posy, this.width, this.height);
-    }
+        if (etat == CharacterEtat.STATICLEFT) {
+            batch.draw(marioStaticLeft.getAnimation(stateTime), 180, 250, this.width, this.height);
+        }
+        hitbox = new Rectangle(x, y, this.width, this.height);
 
-    public Texture getTexture() {
-        return texture;
-    }
-
-    public void setTexture(Texture t) {
-        this.texture = t;
     }
 
     public Rectangle getHitbox() {
@@ -60,52 +56,28 @@ public class Character {
         return width;
     }
 
-    public boolean isWalkingToLeft() {
-        return this.walkingToLeft;
+    public CharacterEtat getEtat() {
+        return etat;
     }
 
-    public void setWalkingToLeft(boolean walkingToLeft) {
-        this.walkingToLeft = walkingToLeft;
+    public void setEtat(CharacterEtat etat) {
+        this.etat = etat;
     }
 
-    public boolean isWalkingToRight() {
-        return this.walkingToRight;
+    public int getY() {
+        return y;
     }
 
-    public void setWalkingToRight(boolean walkingToRight) {
-        this.walkingToRight = walkingToRight;
+    public void setY(int i) {
+        y = i;
     }
 
-    public boolean isJumpingToLeft() {
-        return this.jumpingToLeft;
+    public int getX() {
+        return x;
     }
 
-    public void setJumpingToLeft(boolean jumpingToLeft) {
-        this.jumpingToLeft = jumpingToLeft;
-    }
-
-    public boolean isJumpingToRight() {
-        return this.jumpingToRight;
-    }
-
-    public void setJumpingToRight(boolean jumpingToRight) {
-        this.jumpingToRight = jumpingToRight;
-    }
-
-    public boolean isStatiq() {
-        return this.statiq;
-    }
-
-    public void setStatiq(boolean statiq) {
-        this.statiq = statiq;
-    }
-
-    public boolean isDead() {
-        return this.dead;
-    }
-
-    public void setDead(boolean dead) {
-        this.dead = dead;
+    public void setX(int i) {
+        x = i;
     }
 
 }
