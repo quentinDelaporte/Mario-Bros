@@ -191,6 +191,8 @@ public class mb extends ApplicationAdapter {
 
 				// ? Progression du saut
 				// ? ((mario.getY() - intialBeforeJumpCoordonnees.getY()) / 100 + 0.5)
+				// TODO : Debut fall apres un saut : tester si arrivé au sol -> mettre sur
+				// TODO : STATIC
 			} else {
 				mario.setEtat(CharacterEtat.FALL);
 			}

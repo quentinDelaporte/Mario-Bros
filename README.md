@@ -15,6 +15,8 @@
     - Animation static gauche  
     - Animation courir droite  
     - Animation courir gauche  
+    - Animation sauter droite  
+    - Animation sauter gauche  
 #### Vitesse incrémentale du saut:  
     + 4/tick jusqu'à 30% du saut  
     + 2/tick de 30% à 50% du saut  

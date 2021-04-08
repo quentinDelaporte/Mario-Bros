@@ -14,7 +14,7 @@ public class Character {
     private Rectangle hitbox;
     private CharacterEtat etat;
     private CharacterFacing facing;
-    private Anim marioStaticLeft, marioStaticRight, marioWalkRight, marioWalkLeft;
+    private Anim marioStaticLeft, marioStaticRight, marioWalkRight, marioWalkLeft, marioJumpLeft, marioJumpRight;
 
     public enum CharacterEtat {
         STATIC, JUMP, WALK, RUN, FALL, DEAD;
@@ -42,6 +42,8 @@ public class Character {
         marioStaticRight = new Anim(Gdx.files.internal("./images/mario/mario-static-right.png"), 5, 1, 0.1f);
         marioWalkLeft = new Anim(Gdx.files.internal("./images/mario/mario-walk-left.png"), 8, 1, 0.075f);
         marioWalkRight = new Anim(Gdx.files.internal("./images/mario/mario-walk-right.png"), 8, 1, 0.075f);
+        marioJumpRight = new Anim(Gdx.files.internal("./images/mario/mario-jump-right.png"), 7, 1, 0.08f);
+        marioJumpLeft = new Anim(Gdx.files.internal("./images/mario/mario-jump-left.png"), 7, 1, 0.08f);
 
         animationSelector(batch, stateTime);
         hitbox = new Rectangle(x, y, this.width, this.height);
@@ -69,6 +71,18 @@ public class Character {
                 break;
             case RIGHT:
                 batch.draw(marioWalkRight.getAnimation(stateTime), initialX, initialY, this.width, this.height);
+                break;
+            default:
+                break;
+            }
+            break;
+        case JUMP:
+            switch (facing) {
+            case LEFT:
+                batch.draw(marioJumpLeft.getAnimation(stateTime), initialX, initialY, this.width, this.height);
+                break;
+            case RIGHT:
+                batch.draw(marioJumpRight.getAnimation(stateTime), initialX, initialY, this.width, this.height);
                 break;
             default:
                 break;
