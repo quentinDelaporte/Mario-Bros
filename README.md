@@ -13,6 +13,8 @@
 #### Animations du personnage:  
     - Animation static droite  
     - Animation static gauche  
+    - Animation marcher droite  
+    - Animation marcher gauche  
     - Animation courir droite  
     - Animation courir gauche  
     - Animation sauter droite  

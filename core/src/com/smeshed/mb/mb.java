@@ -98,22 +98,44 @@ public class mb extends ApplicationAdapter {
 				mario.setEtat(CharacterEtat.FALL);
 			}
 		} else if (Gdx.input.isKeyPressed(Keys.LEFT)) {
-			hitbox.x -= 4;
-			if (!collisionDetectionWithMap(hitbox)) {
-				camera.position.x = camera.position.x - 4;
-				mario.setX(mario.getX() - 4);
-				mario.setFacing(CharacterFacing.LEFT);
-				if (mario.getEtat() == CharacterEtat.STATIC)
-					mario.setEtat(CharacterEtat.WALK);
+			if (Gdx.input.isKeyPressed(Keys.CONTROL_LEFT)) {
+				hitbox.x -= 4;
+				if (!collisionDetectionWithMap(hitbox)) {
+					camera.position.x = camera.position.x - 4;
+					mario.setX(mario.getX() - 4);
+					mario.setFacing(CharacterFacing.LEFT);
+					if (mario.getEtat() == CharacterEtat.STATIC)
+						mario.setEtat(CharacterEtat.RUN);
+				}
+			} else {
+				hitbox.x -= 2;
+				if (!collisionDetectionWithMap(hitbox)) {
+					camera.position.x = camera.position.x - 2;
+					mario.setX(mario.getX() - 2);
+					mario.setFacing(CharacterFacing.LEFT);
+					if (mario.getEtat() == CharacterEtat.STATIC)
+						mario.setEtat(CharacterEtat.WALK);
+				}
 			}
 		} else if (Gdx.input.isKeyPressed(Keys.RIGHT)) {
-			hitbox.x += 4;
-			if (!collisionDetectionWithMap(hitbox)) {
-				camera.position.x = camera.position.x + 4;
-				mario.setX(mario.getX() + 4);
-				mario.setFacing(CharacterFacing.RIGHT);
-				if (mario.getEtat() == CharacterEtat.STATIC)
-					mario.setEtat(CharacterEtat.WALK);
+			if (Gdx.input.isKeyPressed(Keys.CONTROL_LEFT)) {
+				hitbox.x += 4;
+				if (!collisionDetectionWithMap(hitbox)) {
+					camera.position.x = camera.position.x + 4;
+					mario.setX(mario.getX() + 4);
+					mario.setFacing(CharacterFacing.RIGHT);
+					if (mario.getEtat() == CharacterEtat.STATIC)
+						mario.setEtat(CharacterEtat.RUN);
+				}
+			} else {
+				hitbox.x += 2;
+				if (!collisionDetectionWithMap(hitbox)) {
+					camera.position.x = camera.position.x + 2;
+					mario.setX(mario.getX() + 2);
+					mario.setFacing(CharacterFacing.RIGHT);
+					if (mario.getEtat() == CharacterEtat.STATIC)
+						mario.setEtat(CharacterEtat.WALK);
+				}
 			}
 		} else if (Gdx.input.isKeyPressed(Keys.DOWN)) {
 			hitbox.y -= 4;
@@ -127,10 +149,9 @@ public class mb extends ApplicationAdapter {
 		if (!Gdx.input.isKeyPressed(Keys.RIGHT) && !Gdx.input.isKeyPressed(Keys.LEFT)
 				&& !Gdx.input.isKeyPressed(Keys.UP) && !Gdx.input.isKeyPressed(Keys.DOWN))
 			mario.setEtat(CharacterEtat.STATIC);
-
+		System.out.println(mario.getEtat() + " - " + mario.getFacing());
 		gravity();
 		jump();
-		System.out.println(mario.getEtat());
 	}
 
 	private void drawCamera() {
@@ -161,6 +182,9 @@ public class mb extends ApplicationAdapter {
 			if (!collisionDetectionWithMap(hitbox)) {
 				camera.position.y = camera.position.y - 4;
 				mario.setY(mario.getY() - 4);
+			}
+			if (collisionDetectionWithMap(hitbox) && mario.getEtat() == CharacterEtat.FALL) {
+				mario.setEtat(CharacterEtat.STATIC);
 			}
 
 		}

@@ -14,7 +14,8 @@ public class Character {
     private Rectangle hitbox;
     private CharacterEtat etat;
     private CharacterFacing facing;
-    private Anim marioStaticLeft, marioStaticRight, marioWalkRight, marioWalkLeft, marioJumpLeft, marioJumpRight;
+    private Anim marioStaticLeft, marioStaticRight, marioWalkRight, marioWalkLeft, marioJumpLeft, marioJumpRight,
+            marioRunLeft, marioRunRight;
 
     public enum CharacterEtat {
         STATIC, JUMP, WALK, RUN, FALL, DEAD;
@@ -37,13 +38,14 @@ public class Character {
     }
 
     public void draw(SpriteBatch batch, float stateTime) {
-
         marioStaticLeft = new Anim(Gdx.files.internal("./images/mario/mario-static-left.png"), 5, 1, 0.1f);
         marioStaticRight = new Anim(Gdx.files.internal("./images/mario/mario-static-right.png"), 5, 1, 0.1f);
-        marioWalkLeft = new Anim(Gdx.files.internal("./images/mario/mario-walk-left.png"), 8, 1, 0.075f);
-        marioWalkRight = new Anim(Gdx.files.internal("./images/mario/mario-walk-right.png"), 8, 1, 0.075f);
-        marioJumpRight = new Anim(Gdx.files.internal("./images/mario/mario-jump-right.png"), 7, 1, 0.08f);
+        marioRunLeft = new Anim(Gdx.files.internal("./images/mario/mario-run-left.png"), 8, 1, 0.04f);
+        marioRunRight = new Anim(Gdx.files.internal("./images/mario/mario-run-right.png"), 8, 1, 0.04f);
+        marioWalkLeft = new Anim(Gdx.files.internal("./images/mario/mario-walk-left.png"), 6, 2, 0.2f);
+        marioWalkRight = new Anim(Gdx.files.internal("./images/mario/mario-walk-right.png"), 6, 2, 0.2f);
         marioJumpLeft = new Anim(Gdx.files.internal("./images/mario/mario-jump-left.png"), 7, 1, 0.08f);
+        marioJumpRight = new Anim(Gdx.files.internal("./images/mario/mario-jump-right.png"), 7, 1, 0.08f);
 
         animationSelector(batch, stateTime);
         hitbox = new Rectangle(x, y, this.width, this.height);
@@ -64,41 +66,44 @@ public class Character {
                 break;
             }
             break;
-        case WALK:
-            switch (facing) {
-            case LEFT:
-                batch.draw(marioWalkLeft.getAnimation(stateTime), initialX, initialY, this.width, this.height);
-                break;
-            case RIGHT:
-                batch.draw(marioWalkRight.getAnimation(stateTime), initialX, initialY, this.width, this.height);
-                break;
-            default:
-                break;
-            }
-            break;
         case JUMP:
             switch (facing) {
             case LEFT:
+                System.out.println("JUMP LEFT");
                 batch.draw(marioJumpLeft.getAnimation(stateTime), initialX, initialY, this.width, this.height);
                 break;
             case RIGHT:
+                System.out.println("JUMP RIGHT");
                 batch.draw(marioJumpRight.getAnimation(stateTime), initialX, initialY, this.width, this.height);
+            }
+            break;
+        case WALK:
+            switch (facing) {
+            case LEFT:
+                System.out.println("WALK LEFT");
+                batch.draw(marioWalkLeft.getAnimation(stateTime), initialX, initialY, this.width, this.height);
                 break;
-            default:
+            case RIGHT:
+                System.out.println("WALK RIGHT");
+                batch.draw(marioWalkRight.getAnimation(stateTime), initialX, initialY, this.width, this.height);
                 break;
             }
             break;
-        default:
+        case RUN:
             switch (facing) {
             case LEFT:
-                batch.draw(marioStaticLeft.getAnimation(stateTime), initialX, initialY, this.width, this.height);
+                System.out.println("RUN LEFT");
+                batch.draw(marioRunLeft.getAnimation(stateTime), initialX, initialY, this.width, this.height);
                 break;
             case RIGHT:
-                batch.draw(marioStaticRight.getAnimation(stateTime), initialX, initialY, this.width, this.height);
-                break;
-            default:
+                System.out.println("RUN RIGHT");
+                batch.draw(marioRunRight.getAnimation(stateTime), initialX, initialY, this.width, this.height);
                 break;
             }
+            break;
+        case DEAD:
+            break;
+        case FALL:
             break;
         }
 
@@ -150,7 +155,6 @@ public class Character {
 
     public boolean isDead() {
         if (y <= 0) {
-            System.out.println("Lose");
 
             etat = CharacterEtat.DEAD;
             return true;
