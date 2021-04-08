@@ -12,10 +12,10 @@
 - Vitesse incrémentale du saut *
 
 ####Vitesse:  
-+4/tick jusqu'à 30% du saut  
-+2/tick de 30% à 50% du saut  
-+1/tick de 50% à 70% du saut  
-+0.5/tick jusqu'à la fin du saut  
+    + 4/tick jusqu'à 30% du saut  
+    + 2/tick de 30% à 50% du saut  
+    + 1/tick de 50% à 70% du saut  
+    + 0.5/tick jusqu'à la fin du saut  
     
 ```
 if (mario.getY() <= intialBeforeJumpCoordonnees.getY() + 16 * 0.3 * hauteur) {  
