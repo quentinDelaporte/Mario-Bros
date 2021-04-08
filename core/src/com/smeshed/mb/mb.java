@@ -12,6 +12,7 @@ import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
 import com.smeshed.mb.Character.CharacterEtat;
+import com.smeshed.mb.Character.CharacterFacing;
 
 public class mb extends ApplicationAdapter {
 	private SpriteBatch batch;
@@ -22,7 +23,7 @@ public class mb extends ApplicationAdapter {
 	private Map map01;
 	private float stateTime;
 	private MapObjects collisionObjects;
-	private Coordonnees intialBeforeJumpCoordonnees;
+	private Coordonnees initialBeforeJumpCoordonnees;
 
 	@Override
 	public void create() {
@@ -42,10 +43,11 @@ public class mb extends ApplicationAdapter {
 		tiledMapRenderer.setView(camera);
 		tiledMapRenderer.render(layerToRender);
 		batch.begin();
-		mario.draw(batch, stateTime);
 
+		mario.draw(batch, stateTime);
 		mario.isDead();
 		keyPressed();
+
 		camera.update();
 		batch.end();
 	}
@@ -62,12 +64,13 @@ public class mb extends ApplicationAdapter {
 				&& mario.getEtat() != CharacterEtat.FALL) {
 			hitbox.x -= 4;
 			hitbox.y += 4;
-			if (!collisionDetection(hitbox)) {
+			if (!collisionDetectionWithMap(hitbox)) {
 				mario.setEtat(CharacterEtat.JUMP);
 				camera.position.x = camera.position.x - 4;
 				mario.setX(mario.getX() - 4);
 				camera.position.y = camera.position.y + 4;
 				mario.setY(mario.getY() + 4);
+				mario.setFacing(CharacterFacing.LEFT);
 			} else {
 				mario.setEtat(CharacterEtat.FALL);
 			}
@@ -75,36 +78,39 @@ public class mb extends ApplicationAdapter {
 				&& mario.getEtat() != CharacterEtat.FALL) {
 			hitbox.x += 4;
 			hitbox.y += 4;
-			if (!collisionDetection(hitbox)) {
+			if (!collisionDetectionWithMap(hitbox)) {
 				mario.setEtat(CharacterEtat.JUMP);
 				camera.position.x = camera.position.x + 4;
 				mario.setX(mario.getX() + 4);
 				camera.position.y = camera.position.y + 4;
 				mario.setY(mario.getY() + 4);
+				mario.setFacing(CharacterFacing.RIGHT);
 			} else {
 				mario.setEtat(CharacterEtat.FALL);
 			}
 		} else if (Gdx.input.isKeyPressed(Keys.LEFT)) {
 			hitbox.x -= 4;
-			if (!collisionDetection(hitbox)) {
+			if (!collisionDetectionWithMap(hitbox)) {
 				camera.position.x = camera.position.x - 4;
 				mario.setX(mario.getX() - 4);
+				mario.setFacing(CharacterFacing.LEFT);
 			}
 		} else if (Gdx.input.isKeyPressed(Keys.RIGHT)) {
 			hitbox.x += 4;
-			if (!collisionDetection(hitbox)) {
+			if (!collisionDetectionWithMap(hitbox)) {
 				camera.position.x = camera.position.x + 4;
 				mario.setX(mario.getX() + 4);
+				mario.setFacing(CharacterFacing.RIGHT);
 			}
 		} else if (Gdx.input.isKeyPressed(Keys.DOWN)) {
 			hitbox.y -= 4;
-			if (!collisionDetection(hitbox)) {
+			if (!collisionDetectionWithMap(hitbox)) {
 				camera.position.y = camera.position.y - 4;
 				mario.setY(mario.getY() - 4);
 			}
 		} else if (Gdx.input.isKeyPressed(Keys.UP) && mario.getEtat() != CharacterEtat.FALL) {
 			hitbox.y += 4;
-			if (!collisionDetection(hitbox)) {
+			if (!collisionDetectionWithMap(hitbox)) {
 				mario.setEtat(CharacterEtat.JUMP);
 				camera.position.y = camera.position.y + 4;
 				mario.setY(mario.getY() + 4);
@@ -124,9 +130,9 @@ public class mb extends ApplicationAdapter {
 		camera.update();
 	}
 
-	// TODO: Gerer autres formes que carré.
-	// ? Polygon / Losanges
-	public boolean collisionDetection(Rectangle hitbox) {
+	// TODO: Gérer autres formes que carré.
+	// ? Polygon / Losanges / triangles
+	public boolean collisionDetectionWithMap(Rectangle hitbox) {
 		for (RectangleMapObject rectangleObject : collisionObjects.getByType(RectangleMapObject.class)) {
 			Rectangle rectangle = rectangleObject.getRectangle();
 			if (Intersector.overlaps(rectangle, hitbox)) {
@@ -137,10 +143,11 @@ public class mb extends ApplicationAdapter {
 	}
 
 	public void gravity() {
+		// ? Implémenter vitesse de chute
 		if (mario.getEtat() != CharacterEtat.JUMP) {
 			Rectangle hitbox = mario.getHitbox();
 			hitbox.y -= 4;
-			if (!collisionDetection(hitbox)) {
+			if (!collisionDetectionWithMap(hitbox)) {
 				camera.position.y = camera.position.y - 4;
 				mario.setY(mario.getY() - 4);
 			} else {
@@ -153,25 +160,26 @@ public class mb extends ApplicationAdapter {
 	public void jump() {
 		double hauteur = 2.5;
 		if (mario.getEtat() != CharacterEtat.JUMP) {
-			intialBeforeJumpCoordonnees = new Coordonnees(mario.getX(), mario.getY());
+			initialBeforeJumpCoordonnees = new Coordonnees(mario.getX(), mario.getY());
 		} else {
-			if (mario.getY() <= intialBeforeJumpCoordonnees.getY() + 16 * hauteur) {
+			if (mario.getY() <= initialBeforeJumpCoordonnees.getY() + 16 * hauteur) {
 
-				if (mario.getY() <= intialBeforeJumpCoordonnees.getY() + 16 * 0.3 * hauteur) {
+				if (mario.getY() <= initialBeforeJumpCoordonnees.getY() + 16 * 0.3 * hauteur) {
 					camera.position.y = camera.position.y + 4;
 					mario.setY(mario.getY() + 4);
-				} else if (mario.getY() <= intialBeforeJumpCoordonnees.getY() + 16 * 0.5 * hauteur) {
+				} else if (mario.getY() <= initialBeforeJumpCoordonnees.getY() + 16 * 0.5 * hauteur) {
 					camera.position.y = camera.position.y + 2;
 					mario.setY(mario.getY() + 2);
-				} else if (mario.getY() <= intialBeforeJumpCoordonnees.getY() + 16 * 0.7 * hauteur) {
+				} else if (mario.getY() <= initialBeforeJumpCoordonnees.getY() + 16 * 0.7 * hauteur) {
 					camera.position.y = camera.position.y + 1;
 					mario.setY(mario.getY() + 1);
-				} else if (mario.getY() <= intialBeforeJumpCoordonnees.getY() + 16 * hauteur) {
+				} else if (mario.getY() <= initialBeforeJumpCoordonnees.getY() + 16 * hauteur) {
 					camera.position.y = (float) (camera.position.y + 0.5);
 					mario.setY(mario.getY() + (float) 0.5);
 				}
 
-				// ((mario.getY() - intialBeforeJumpCoordonnees.getY()) / 100 + 0.5)
+				// ? Progression du saut
+				// ? ((mario.getY() - intialBeforeJumpCoordonnees.getY()) / 100 + 0.5)
 			} else {
 				mario.setEtat(CharacterEtat.FALL);
 			}

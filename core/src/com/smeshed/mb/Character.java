@@ -15,8 +15,8 @@ public class Character {
     private Rectangle hitbox;
     private CharacterEtat etat;
     private CharacterFacing facing;
-    private FileHandle marioStandStatic;
     private Anim marioStaticLeft;
+    private Anim marioStaticRight;
     private static final long LONG_JUMP_PRESS = 150l;
     private static final float ACCELERATION = 20f;
     private static final float GRAVITY = -20f;
@@ -45,13 +45,25 @@ public class Character {
 
     public void draw(SpriteBatch batch, float stateTime) {
 
-        marioStandStatic = Gdx.files.internal("./images/mario/mario-static-left.png");
-        marioStaticLeft = new Anim(marioStandStatic, 5, 1, 0.1f);
+        marioStaticLeft = new Anim(Gdx.files.internal("./images/mario/mario-static-left.png"), 5, 1, 0.1f);
+        marioStaticRight = new Anim(Gdx.files.internal("./images/mario/mario-static-right.png"), 5, 1, 0.1f);
 
-        // if (etat == CharacterEtat.STATICLEFT) {
-        batch.draw(marioStaticLeft.getAnimation(stateTime), 180, 250, this.width, this.height);
-        // }
+        animationSelector(batch, stateTime);
         hitbox = new Rectangle(x, y, this.width, this.height);
+
+    }
+
+    public void animationSelector(SpriteBatch batch, float stateTime) {
+        switch (facing) {
+        case LEFT:
+            batch.draw(marioStaticLeft.getAnimation(stateTime), 180, 250, this.width, this.height);
+            break;
+        case RIGHT:
+            batch.draw(marioStaticRight.getAnimation(stateTime), 180, 250, this.width, this.height);
+            break;
+        default:
+            break;
+        }
 
     }
 
