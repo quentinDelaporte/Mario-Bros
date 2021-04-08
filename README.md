@@ -11,7 +11,7 @@
 - Saut
 - Vitesse incrémentale du saut *
 
-####Vitesse:  
+#### Vitesse:  
     + 4/tick jusqu'à 30% du saut  
     + 2/tick de 30% à 50% du saut  
     + 1/tick de 50% à 70% du saut  
