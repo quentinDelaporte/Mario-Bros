@@ -2,16 +2,16 @@
    
  ## I. Fonctionnalitées implémentées.  
    
--Creation de la fenetre de jeu  
--Animation du personnage  
--Affichage d'une map  
--Défilement de la map  
--Gravité  
--Collisions avec la map  
--Saut
--Vitesse incrémentale du saut *
+- Creation de la fenetre de jeu  
+- Animation du personnage  
+- Affichage d'une map  
+- Défilement de la map  
+- Gravité  
+- Collisions avec la map  
+- Saut
+- Vitesse incrémentale du saut *
 
-Vitesse:  
+####Vitesse:  
 +4/tick jusqu'à 30% du saut  
 +2/tick de 30% à 50% du saut  
 +1/tick de 50% à 70% du saut  
