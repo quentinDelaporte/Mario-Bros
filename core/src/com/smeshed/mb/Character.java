@@ -8,8 +8,8 @@ import com.badlogic.gdx.math.Rectangle;
 
 public class Character {
     private TextureRegion texture;
-    private int y;
-    private int x;
+    private float y;
+    private float x;
     private int width;
     private int height;
     private Rectangle hitbox;
@@ -32,7 +32,7 @@ public class Character {
         LEFT, RIGHT
     }
 
-    public Character(int width, int height, int x, int y) {
+    public Character(int width, int height, float x, float y) {
 
         etat = CharacterEtat.STATIC;
         facing = CharacterFacing.LEFT;
@@ -83,20 +83,20 @@ public class Character {
         this.facing = facing;
     }
 
-    public int getY() {
+    public float getY() {
         return y;
     }
 
-    public void setY(int i) {
-        y = i;
+    public void setY(float f) {
+        y = f;
     }
 
-    public int getX() {
+    public float getX() {
         return x;
     }
 
-    public void setX(int i) {
-        x = i;
+    public void setX(float f) {
+        x = f;
     }
 
     public boolean isDead() {
