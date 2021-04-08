@@ -11,8 +11,10 @@
 - Saut
 - Vitesse incrémentale du saut
 #### Animations du personnage:  
-    - Animation static droite
-    - Animation static gauche
+    - Animation static droite  
+    - Animation static gauche  
+    - Animation courir droite  
+    - Animation courir gauche  
 #### Vitesse incrémentale du saut:  
     + 4/tick jusqu'à 30% du saut  
     + 2/tick de 30% à 50% du saut  

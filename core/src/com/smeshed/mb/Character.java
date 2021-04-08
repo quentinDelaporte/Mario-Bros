@@ -1,28 +1,20 @@
 package com.smeshed.mb;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 
 public class Character {
-    private TextureRegion texture;
     private float y;
     private float x;
+    private float initialX;
+    private float initialY;
     private int width;
     private int height;
     private Rectangle hitbox;
     private CharacterEtat etat;
     private CharacterFacing facing;
-    private Anim marioStaticLeft;
-    private Anim marioStaticRight;
-    private static final long LONG_JUMP_PRESS = 150l;
-    private static final float ACCELERATION = 20f;
-    private static final float GRAVITY = -20f;
-    private static final float MAX_JUMP_SPEED = 7f;
-    private static final float DAMP = 0.90f;
-    private static final float MAX_VEL = 4f;
+    private Anim marioStaticLeft, marioStaticRight, marioWalkRight, marioWalkLeft;
 
     public enum CharacterEtat {
         STATIC, JUMP, WALK, RUN, FALL, DEAD;
@@ -36,7 +28,8 @@ public class Character {
 
         etat = CharacterEtat.STATIC;
         facing = CharacterFacing.LEFT;
-
+        this.initialX = x;
+        this.initialY = y;
         this.x = x;
         this.y = y;
         this.height = height;
@@ -47,6 +40,8 @@ public class Character {
 
         marioStaticLeft = new Anim(Gdx.files.internal("./images/mario/mario-static-left.png"), 5, 1, 0.1f);
         marioStaticRight = new Anim(Gdx.files.internal("./images/mario/mario-static-right.png"), 5, 1, 0.1f);
+        marioWalkLeft = new Anim(Gdx.files.internal("./images/mario/mario-walk-left.png"), 8, 1, 0.075f);
+        marioWalkRight = new Anim(Gdx.files.internal("./images/mario/mario-walk-right.png"), 8, 1, 0.075f);
 
         animationSelector(batch, stateTime);
         hitbox = new Rectangle(x, y, this.width, this.height);
@@ -54,14 +49,42 @@ public class Character {
     }
 
     public void animationSelector(SpriteBatch batch, float stateTime) {
-        switch (facing) {
-        case LEFT:
-            batch.draw(marioStaticLeft.getAnimation(stateTime), 180, 250, this.width, this.height);
+        switch (etat) {
+        case STATIC:
+            switch (facing) {
+            case LEFT:
+                batch.draw(marioStaticLeft.getAnimation(stateTime), initialX, initialY, this.width, this.height);
+                break;
+            case RIGHT:
+                batch.draw(marioStaticRight.getAnimation(stateTime), initialX, initialY, this.width, this.height);
+                break;
+            default:
+                break;
+            }
             break;
-        case RIGHT:
-            batch.draw(marioStaticRight.getAnimation(stateTime), 180, 250, this.width, this.height);
+        case WALK:
+            switch (facing) {
+            case LEFT:
+                batch.draw(marioWalkLeft.getAnimation(stateTime), initialX, initialY, this.width, this.height);
+                break;
+            case RIGHT:
+                batch.draw(marioWalkRight.getAnimation(stateTime), initialX, initialY, this.width, this.height);
+                break;
+            default:
+                break;
+            }
             break;
         default:
+            switch (facing) {
+            case LEFT:
+                batch.draw(marioStaticLeft.getAnimation(stateTime), initialX, initialY, this.width, this.height);
+                break;
+            case RIGHT:
+                batch.draw(marioStaticRight.getAnimation(stateTime), initialX, initialY, this.width, this.height);
+                break;
+            default:
+                break;
+            }
             break;
         }
 
@@ -120,29 +143,4 @@ public class Character {
         }
         return false;
     }
-
-    public static long getLongJumpPress() {
-        return LONG_JUMP_PRESS;
-    }
-
-    public static float getAcceleration() {
-        return ACCELERATION;
-    }
-
-    public static float getGravity() {
-        return GRAVITY;
-    }
-
-    public static float getMaxJumpSpeed() {
-        return MAX_JUMP_SPEED;
-    }
-
-    public static float getDamp() {
-        return DAMP;
-    }
-
-    public static float getMaxVel() {
-        return MAX_VEL;
-    }
-
 }
