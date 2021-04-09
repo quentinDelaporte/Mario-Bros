@@ -13,6 +13,7 @@ import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
 import com.smeshed.mb.Character.CharacterEtat;
 import com.smeshed.mb.Character.CharacterFacing;
+import com.smeshed.mb.Mob.MobType;
 
 public class mb extends ApplicationAdapter {
 	private SpriteBatch batch;
@@ -24,6 +25,7 @@ public class mb extends ApplicationAdapter {
 	private float stateTime;
 	private MapObjects collisionObjects;
 	private Coordonnees initialBeforeJumpCoordonnees;
+	private Goomba goomba;
 
 	@Override
 	public void create() {
@@ -31,6 +33,7 @@ public class mb extends ApplicationAdapter {
 		drawCamera();
 		mario = new Character(20, 24, 180, 250);
 		map01 = new Map("./maps/map1-1.tmx", 192);
+		goomba = new Goomba(180, 700, 20, 24, MobType.GOOMBA, false);
 		collisionObjects = map01.getCollisionTile(2);
 		tiledMapRenderer = map01.getTiledMapRenderer();
 	}
@@ -45,6 +48,8 @@ public class mb extends ApplicationAdapter {
 		batch.begin();
 
 		mario.draw(batch, stateTime);
+		goomba.draw(batch, stateTime);
+		goomba.move(mario.getEtat(), mario.getFacing());
 		mario.isDead();
 		keyPressed();
 
@@ -97,17 +102,8 @@ public class mb extends ApplicationAdapter {
 			} else {
 				mario.setEtat(CharacterEtat.FALL);
 			}
-		} else if (Gdx.input.isKeyPressed(Keys.LEFT)) {
-			if (Gdx.input.isKeyPressed(Keys.CONTROL_LEFT)) {
-				hitbox.x -= 4;
-				if (!collisionDetectionWithMap(hitbox)) {
-					camera.position.x = camera.position.x - 4;
-					mario.setX(mario.getX() - 4);
-					mario.setFacing(CharacterFacing.LEFT);
-					if (mario.getEtat() == CharacterEtat.STATIC)
-						mario.setEtat(CharacterEtat.RUN);
-				}
-			} else {
+		} else if (!Gdx.input.isKeyPressed(Keys.CONTROL_LEFT)) {
+			if (Gdx.input.isKeyPressed(Keys.LEFT)) {
 				hitbox.x -= 2;
 				if (!collisionDetectionWithMap(hitbox)) {
 					camera.position.x = camera.position.x - 2;
@@ -116,18 +112,7 @@ public class mb extends ApplicationAdapter {
 					if (mario.getEtat() == CharacterEtat.STATIC)
 						mario.setEtat(CharacterEtat.WALK);
 				}
-			}
-		} else if (Gdx.input.isKeyPressed(Keys.RIGHT)) {
-			if (Gdx.input.isKeyPressed(Keys.CONTROL_LEFT)) {
-				hitbox.x += 4;
-				if (!collisionDetectionWithMap(hitbox)) {
-					camera.position.x = camera.position.x + 4;
-					mario.setX(mario.getX() + 4);
-					mario.setFacing(CharacterFacing.RIGHT);
-					if (mario.getEtat() == CharacterEtat.STATIC)
-						mario.setEtat(CharacterEtat.RUN);
-				}
-			} else {
+			} else if (Gdx.input.isKeyPressed(Keys.RIGHT)) {
 				hitbox.x += 2;
 				if (!collisionDetectionWithMap(hitbox)) {
 					camera.position.x = camera.position.x + 2;
@@ -137,21 +122,45 @@ public class mb extends ApplicationAdapter {
 						mario.setEtat(CharacterEtat.WALK);
 				}
 			}
-		} else if (Gdx.input.isKeyPressed(Keys.DOWN)) {
+		} else if (Gdx.input.isKeyPressed(Keys.CONTROL_LEFT)) {
+			if (Gdx.input.isKeyPressed(Keys.RIGHT)) {
+				hitbox.x += 4;
+				if (!collisionDetectionWithMap(hitbox)) {
+					camera.position.x = camera.position.x + 4;
+					mario.setX(mario.getX() + 4);
+					mario.setFacing(CharacterFacing.RIGHT);
+					if (mario.getEtat() == CharacterEtat.STATIC)
+						mario.setEtat(CharacterEtat.RUN);
+				}
+			} else if (Gdx.input.isKeyPressed(Keys.LEFT)) {
+				hitbox.x -= 4;
+				if (!collisionDetectionWithMap(hitbox)) {
+					camera.position.x = camera.position.x - 4;
+					mario.setX(mario.getX() - 4);
+					mario.setFacing(CharacterFacing.LEFT);
+					if (mario.getEtat() == CharacterEtat.STATIC)
+						mario.setEtat(CharacterEtat.RUN);
+				}
+			}
+		} else if (Gdx.input.isKeyPressed(Keys.DOWN))
+
+		{
 			hitbox.y -= 4;
 			if (!collisionDetectionWithMap(hitbox)) {
 				camera.position.y = camera.position.y - 4;
 				mario.setY(mario.getY() - 4);
 			}
 		}
-
 		// Reset de l'état si aucune touche préssé
 		if (!Gdx.input.isKeyPressed(Keys.RIGHT) && !Gdx.input.isKeyPressed(Keys.LEFT)
 				&& !Gdx.input.isKeyPressed(Keys.UP) && !Gdx.input.isKeyPressed(Keys.DOWN))
 			mario.setEtat(CharacterEtat.STATIC);
 		System.out.println(mario.getEtat() + " - " + mario.getFacing());
+
 		gravity();
+
 		jump();
+
 	}
 
 	private void drawCamera() {

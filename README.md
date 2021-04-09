@@ -10,6 +10,10 @@
 - Collisions avec la map  
 - Saut
 - Vitesse incrémentale du saut
+- Entitée: mob:  
+    - Goomba  
+- Gestion de la position des entité en fonction du mouvement de mario
+- Animation de Goomba
 #### Animations du personnage:  
     - Animation static droite  
     - Animation static gauche  
