@@ -18,7 +18,7 @@ public class Character {
             marioRunLeft, marioRunRight;
 
     public enum CharacterEtat {
-        STATIC, JUMP, WALK, RUN, FALL, DEAD;
+        STATIC, JUMPRUN, JUMP, JUMPWALK, WALK, RUN, FALL, DEAD;
     }
 
     public enum CharacterFacing {
@@ -69,22 +69,36 @@ public class Character {
         case JUMP:
             switch (facing) {
             case LEFT:
-                System.out.println("JUMP LEFT");
                 batch.draw(marioJumpLeft.getAnimation(stateTime), initialX, initialY, this.width, this.height);
                 break;
             case RIGHT:
-                System.out.println("JUMP RIGHT");
+                batch.draw(marioJumpRight.getAnimation(stateTime), initialX, initialY, this.width, this.height);
+            }
+            break;
+        case JUMPWALK:
+            switch (facing) {
+            case LEFT:
+                batch.draw(marioJumpLeft.getAnimation(stateTime), initialX, initialY, this.width, this.height);
+                break;
+            case RIGHT:
+                batch.draw(marioJumpRight.getAnimation(stateTime), initialX, initialY, this.width, this.height);
+            }
+            break;
+        case JUMPRUN:
+            switch (facing) {
+            case LEFT:
+                batch.draw(marioJumpLeft.getAnimation(stateTime), initialX, initialY, this.width, this.height);
+                break;
+            case RIGHT:
                 batch.draw(marioJumpRight.getAnimation(stateTime), initialX, initialY, this.width, this.height);
             }
             break;
         case WALK:
             switch (facing) {
             case LEFT:
-                System.out.println("WALK LEFT");
                 batch.draw(marioWalkLeft.getAnimation(stateTime), initialX, initialY, this.width, this.height);
                 break;
             case RIGHT:
-                System.out.println("WALK RIGHT");
                 batch.draw(marioWalkRight.getAnimation(stateTime), initialX, initialY, this.width, this.height);
                 break;
             }
@@ -92,11 +106,9 @@ public class Character {
         case RUN:
             switch (facing) {
             case LEFT:
-                System.out.println("RUN LEFT");
                 batch.draw(marioRunLeft.getAnimation(stateTime), initialX, initialY, this.width, this.height);
                 break;
             case RIGHT:
-                System.out.println("RUN RIGHT");
                 batch.draw(marioRunRight.getAnimation(stateTime), initialX, initialY, this.width, this.height);
                 break;
             }

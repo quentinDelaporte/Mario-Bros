@@ -1,5 +1,7 @@
 package com.smeshed.mb;
 
+import java.text.BreakIterator;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
@@ -31,12 +33,9 @@ public class Goomba extends Mob {
 
     }
 
-    /**
-     * Xmario : x+2 = walk Xmario : x+4 = run Xgoomba : x+2-3 = walk Xgoomba: x+4-3
-     * = walk
-     */
-
-    public void move(CharacterEtat e, CharacterFacing f) {
+    // TODO: gerer saut de mario / chute
+    // TODO: gerer collisions & mort
+    public void move(CharacterEtat e, CharacterFacing f, int jumpHeight) {
         switch (e) {
         case WALK:
             switch (f) {
@@ -57,6 +56,12 @@ public class Goomba extends Mob {
                 this.x -= 5;
                 break;
             }
+            break;
+        case JUMP:
+            this.y -= jumpHeight;
+            break;
+        case FALL:
+            this.y += 4;
             break;
         case STATIC:
             this.x -= 1;

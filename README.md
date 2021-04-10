@@ -8,7 +8,7 @@
 - Défilement de la map  
 - Gravité  
 - Collisions avec la map  
-- Saut
+- Saut (sur place, en marchant, en courant)
 - Vitesse incrémentale du saut
 - Entitée: mob:  
     - Goomba  
