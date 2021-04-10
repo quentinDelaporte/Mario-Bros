@@ -19,7 +19,9 @@ import com.smeshed.mb.GUI.TimerParty;
 import com.smeshed.mb.Entity.Mob.MobType;
 import com.smeshed.mb.Objects.Coin;
 import com.smeshed.mb.Objects.Coin.CoinType;
+import com.smeshed.mb.Utils.AmbiantSound;
 import com.smeshed.mb.Utils.BackgroundMusic;
+import com.smeshed.mb.Utils.Coordonnees;
 
 public class mb extends ApplicationAdapter {
 	private SpriteBatch batch;
@@ -36,15 +38,16 @@ public class mb extends ApplicationAdapter {
 	private int jumpHeight;
 	private Gui gui;
 	private BackgroundMusic m;
+	private boolean deadSoundPlayed = false;
 
 	@Override
 	public void create() {
 		batch = new SpriteBatch();
 		drawCamera();
-		mario = new Character(20, 24, 180, 250);
-		map01 = new Map("./maps/map1-1.tmx", 192);
+		mario = new Character(20, 24, Gdx.graphics.getWidth() / 2 - 10, Gdx.graphics.getHeight() / 2 - 12);
+		map01 = new Map("./maps/map1-1.tmx");
 		gui = new Gui();
-		m = new BackgroundMusic();
+		m = new BackgroundMusic(0.01f);
 		// goomba = new Goomba(180, 700, 20, 24, MobType.GOOMBA, false);
 		// c0 = new Coin(CoinType.GIANT_COIN, 180, 350, 24, 24);
 		collisionObjects = map01.getCollisionTile(2);
@@ -77,57 +80,69 @@ public class mb extends ApplicationAdapter {
 
 	private void keyPressed() {
 		Rectangle hitbox = mario.getHitbox();
+		CharacterEtat lastEtat = mario.getEtat();
 
-		if (Gdx.input.isKeyPressed(Keys.LEFT))
-			// ! vers la gauche
-			mario.setFacing(CharacterFacing.LEFT);
-		else if (Gdx.input.isKeyPressed(Keys.RIGHT)) {
-			// ! vers la droite
-			mario.setFacing(CharacterFacing.RIGHT);
-		}
+		if (mario.getEtat() != CharacterEtat.DEAD) {
+			if (Gdx.input.isKeyPressed(Keys.LEFT))
+				// ! vers la gauche
+				mario.setFacing(CharacterFacing.LEFT);
+			else if (Gdx.input.isKeyPressed(Keys.RIGHT)) {
+				// ! vers la droite
+				mario.setFacing(CharacterFacing.RIGHT);
+			}
 
-		if ((Gdx.input.isKeyPressed(Keys.LEFT) || Gdx.input.isKeyPressed(Keys.RIGHT))
-				&& !Gdx.input.isKeyPressed(Keys.CONTROL_LEFT) && mario.getEtat() != CharacterEtat.JUMPWALK
-				&& mario.getEtat() != CharacterEtat.JUMPRUN && mario.getEtat() != CharacterEtat.FALL) {
-			// ! Marche
-			mario.setEtat(CharacterEtat.WALK);
-			walk(hitbox);
-		}
+			if ((Gdx.input.isKeyPressed(Keys.LEFT) || Gdx.input.isKeyPressed(Keys.RIGHT))
+					&& !Gdx.input.isKeyPressed(Keys.CONTROL_LEFT) && mario.getEtat() != CharacterEtat.JUMPWALK
+					&& mario.getEtat() != CharacterEtat.JUMPRUN && mario.getEtat() != CharacterEtat.FALL) {
+				// ! Marche
+				mario.setEtat(CharacterEtat.WALK);
+				walk(hitbox);
+			}
 
-		if (Gdx.input.isKeyPressed(Keys.CONTROL_LEFT)
-				&& (Gdx.input.isKeyPressed(Keys.LEFT) || Gdx.input.isKeyPressed(Keys.RIGHT))
-				&& mario.getEtat() != CharacterEtat.JUMPWALK && mario.getEtat() != CharacterEtat.JUMPRUN
-				&& mario.getEtat() != CharacterEtat.FALL) {
-			// ! Course
-			mario.setEtat(CharacterEtat.RUN);
-			run(hitbox);
-		}
+			if (Gdx.input.isKeyPressed(Keys.CONTROL_LEFT)
+					&& (Gdx.input.isKeyPressed(Keys.LEFT) || Gdx.input.isKeyPressed(Keys.RIGHT))
+					&& mario.getEtat() != CharacterEtat.JUMPWALK && mario.getEtat() != CharacterEtat.JUMPRUN
+					&& mario.getEtat() != CharacterEtat.FALL) {
+				// ! Course
+				mario.setEtat(CharacterEtat.RUN);
+				run(hitbox);
+			}
 
-		if (!Gdx.input.isKeyPressed(Keys.RIGHT) && !Gdx.input.isKeyPressed(Keys.LEFT)
-				&& !Gdx.input.isKeyPressed(Keys.UP) && !Gdx.input.isKeyPressed(Keys.DOWN)
-				&& mario.getEtat() != CharacterEtat.JUMPWALK && mario.getEtat() != CharacterEtat.JUMPRUN
-				&& mario.getEtat() != CharacterEtat.FALL) {
-			// ! Static
-			mario.setEtat(CharacterEtat.STATIC);
-			statiq(hitbox);
-		}
+			if (!Gdx.input.isKeyPressed(Keys.RIGHT) && !Gdx.input.isKeyPressed(Keys.LEFT)
+					&& !Gdx.input.isKeyPressed(Keys.UP) && !Gdx.input.isKeyPressed(Keys.DOWN)
+					&& mario.getEtat() != CharacterEtat.JUMPWALK && mario.getEtat() != CharacterEtat.JUMPRUN
+					&& mario.getEtat() != CharacterEtat.FALL) {
+				// ! Static
+				mario.setEtat(CharacterEtat.STATIC);
+				statiq(hitbox);
+			}
 
-		if (mario.getEtat() != CharacterEtat.FALL) {
-			if (Gdx.input.isKeyPressed(Keys.UP)) {
-				if (Gdx.input.isKeyPressed(Keys.CONTROL_LEFT)
-						&& (Gdx.input.isKeyPressed(Keys.LEFT) || Gdx.input.isKeyPressed(Keys.RIGHT))) {
-					// ! Saut en courant
-					mario.setEtat(CharacterEtat.JUMPRUN);
-				} else if ((Gdx.input.isKeyPressed(Keys.LEFT) || Gdx.input.isKeyPressed(Keys.RIGHT))) {
-					// ! Saut en marchant
-					mario.setEtat(CharacterEtat.JUMPWALK);
-				} else {
-					// ! Saut static
-					mario.setEtat(CharacterEtat.JUMP);
+			if (mario.getEtat() != CharacterEtat.FALL) {
+				if (Gdx.input.isKeyPressed(Keys.UP)) {
+					if (lastEtat != CharacterEtat.JUMP && lastEtat != CharacterEtat.JUMPWALK
+							&& lastEtat != CharacterEtat.JUMPRUN) {
+						AmbiantSound s = new AmbiantSound(1f, "./song/smb_jump-small.wav");
+
+					}
+					if (Gdx.input.isKeyPressed(Keys.CONTROL_LEFT)
+							&& (Gdx.input.isKeyPressed(Keys.LEFT) || Gdx.input.isKeyPressed(Keys.RIGHT))) {
+						// ! Saut en courant
+						mario.setEtat(CharacterEtat.JUMPRUN);
+					} else if ((Gdx.input.isKeyPressed(Keys.LEFT) || Gdx.input.isKeyPressed(Keys.RIGHT))) {
+						// ! Saut en marchant
+						mario.setEtat(CharacterEtat.JUMPWALK);
+					} else {
+						// ! Saut static
+						mario.setEtat(CharacterEtat.JUMP);
+					}
 				}
 			}
+		} else {
+			if (!deadSoundPlayed) {
+				AmbiantSound s2 = new AmbiantSound(1f, "./song/smb_mariodie.wav");
+				deadSoundPlayed = true;
+			}
 		}
-		System.out.println(mario.getEtat());
 		gravity();
 		jump();
 
@@ -221,8 +236,6 @@ public class mb extends ApplicationAdapter {
 
 			} else {
 				mario.setEtat(CharacterEtat.FALL);
-
-				System.out.println("SET TO FALL");
 			}
 		}
 		// ? Progression du saut

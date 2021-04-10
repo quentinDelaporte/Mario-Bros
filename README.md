@@ -10,7 +10,6 @@
 - Collisions avec la map  
 - Saut (sur place, en marchant, en courant)  
 - Vitesse incrémentale du saut  
-- Musique de font  
 - Minuteur
 - Entitée: mob:  
     - Goomba  
@@ -18,6 +17,7 @@
 - Animation de Goomba  
 - Objets :  
     - Grande pieces
+- Sons  
 #### Animations du personnage:  
     - Animation static droite  
     - Animation static gauche  
@@ -27,11 +27,18 @@
     - Animation courir gauche  
     - Animation sauter droite  
     - Animation sauter gauche  
+
+#### Sons:
+    - Musique de fond
+    - Son de saut
+    - Son de mort    
+  
 #### Vitesse incrémentale du saut:  
     + 4/tick jusqu'à 30% du saut  
     + 2/tick de 30% à 50% du saut  
     + 1/tick de 50% à 70% du saut  
     + 0.5/tick jusqu'à la fin du saut  
+  
     
 ```
 if (mario.getY() <= intialBeforeJumpCoordonnees.getY() + 16 * 0.3 * hauteur) {  

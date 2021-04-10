@@ -167,7 +167,8 @@ public class Character {
     }
 
     public boolean isDead() {
-        if (y <= 0) {
+        System.out.println(y);
+        if (y < 0) {
 
             etat = CharacterEtat.DEAD;
             return true;

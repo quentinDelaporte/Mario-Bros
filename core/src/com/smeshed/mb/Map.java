@@ -13,16 +13,14 @@ public class Map {
     private TiledMap tiledMap;
     private int tilePixelWidth;
     private int tilePixelHeight;
-    private int groundHeight;
     private int mapHeight;
 
-    public Map(String mapPath, int groundHeight) {
+    public Map(String mapPath) {
         tiledMap = new TmxMapLoader().load(mapPath);
         tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
         MapProperties propMap = tiledMap.getProperties();
         tilePixelWidth = propMap.get("tilewidth", Integer.class) * propMap.get("width", Integer.class);
         tilePixelHeight = propMap.get("tileheight", Integer.class) * propMap.get("height", Integer.class);
-        this.groundHeight = groundHeight;
 
         mapHeight = propMap.get("height", Integer.class);
 
@@ -46,10 +44,6 @@ public class Map {
 
     public int getTilePixelWidth() {
         return tilePixelWidth;
-    }
-
-    public int getGroundHeight() {
-        return groundHeight;
     }
 
     public MapLayer getCollisionLayer(int i) {

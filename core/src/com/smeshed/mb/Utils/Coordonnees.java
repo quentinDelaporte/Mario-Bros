@@ -1,4 +1,4 @@
-package com.smeshed.mb;
+package com.smeshed.mb.Utils;
 
 public class Coordonnees {
     private float x;
