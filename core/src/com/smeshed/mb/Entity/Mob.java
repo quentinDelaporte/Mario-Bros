@@ -1,4 +1,4 @@
-package com.smeshed.mb;
+package com.smeshed.mb.Entity;
 
 import com.badlogic.gdx.math.Rectangle;
 

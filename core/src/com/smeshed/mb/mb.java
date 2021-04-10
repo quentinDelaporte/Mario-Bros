@@ -11,11 +11,15 @@ import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
-import com.smeshed.mb.Character.CharacterEtat;
-import com.smeshed.mb.Character.CharacterFacing;
-import com.smeshed.mb.Mob.MobType;
+import com.smeshed.mb.Entity.Character.CharacterEtat;
+import com.smeshed.mb.Entity.Character.CharacterFacing;
+import com.smeshed.mb.Entity.Character;
+import com.smeshed.mb.GUI.Gui;
+import com.smeshed.mb.GUI.TimerParty;
+import com.smeshed.mb.Entity.Mob.MobType;
 import com.smeshed.mb.Objects.Coin;
 import com.smeshed.mb.Objects.Coin.CoinType;
+import com.smeshed.mb.Utils.BackgroundMusic;
 
 public class mb extends ApplicationAdapter {
 	private SpriteBatch batch;
@@ -29,8 +33,9 @@ public class mb extends ApplicationAdapter {
 	private Coordonnees initialBeforeJumpCoordonnees;
 	// private Goomba goomba;
 	// private Coin c0;
-
 	private int jumpHeight;
+	private Gui gui;
+	private BackgroundMusic m;
 
 	@Override
 	public void create() {
@@ -38,6 +43,8 @@ public class mb extends ApplicationAdapter {
 		drawCamera();
 		mario = new Character(20, 24, 180, 250);
 		map01 = new Map("./maps/map1-1.tmx", 192);
+		gui = new Gui();
+		m = new BackgroundMusic();
 		// goomba = new Goomba(180, 700, 20, 24, MobType.GOOMBA, false);
 		// c0 = new Coin(CoinType.GIANT_COIN, 180, 350, 24, 24);
 		collisionObjects = map01.getCollisionTile(2);
@@ -52,8 +59,8 @@ public class mb extends ApplicationAdapter {
 		tiledMapRenderer.setView(camera);
 		tiledMapRenderer.render(layerToRender);
 		batch.begin();
-
 		mario.draw(batch, stateTime);
+		gui.draw(batch);
 		// goomba.draw(batch, stateTime);
 		// goomba.move(mario.getEtat(), mario.getFacing(), jumpHeight);
 		// c0.draw(batch, stateTime);

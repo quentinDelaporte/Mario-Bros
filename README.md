@@ -10,6 +10,8 @@
 - Collisions avec la map  
 - Saut (sur place, en marchant, en courant)  
 - Vitesse incrémentale du saut  
+- Musique de font  
+- Minuteur
 - Entitée: mob:  
     - Goomba  
 - Gestion de la position des entité en fonction du mouvement de mario  

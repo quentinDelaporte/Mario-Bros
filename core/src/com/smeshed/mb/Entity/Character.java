@@ -1,8 +1,9 @@
-package com.smeshed.mb;
+package com.smeshed.mb.Entity;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
+import com.smeshed.mb.Anim;
 
 public class Character {
     private float y;

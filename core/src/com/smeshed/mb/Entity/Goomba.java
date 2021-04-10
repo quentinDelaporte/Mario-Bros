@@ -1,12 +1,13 @@
-package com.smeshed.mb;
+package com.smeshed.mb.Entity;
 
 import java.text.BreakIterator;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
-import com.smeshed.mb.Character.CharacterEtat;
-import com.smeshed.mb.Character.CharacterFacing;
+import com.smeshed.mb.Anim;
+import com.smeshed.mb.Entity.Character.CharacterEtat;
+import com.smeshed.mb.Entity.Character.CharacterFacing;
 
 // TODO: Creers anim et les définir;
 public class Goomba extends Mob {
