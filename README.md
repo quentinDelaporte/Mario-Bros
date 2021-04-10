@@ -8,12 +8,14 @@
 - Défilement de la map  
 - Gravité  
 - Collisions avec la map  
-- Saut (sur place, en marchant, en courant)
-- Vitesse incrémentale du saut
+- Saut (sur place, en marchant, en courant)  
+- Vitesse incrémentale du saut  
 - Entitée: mob:  
     - Goomba  
-- Gestion de la position des entité en fonction du mouvement de mario
-- Animation de Goomba
+- Gestion de la position des entité en fonction du mouvement de mario  
+- Animation de Goomba  
+- Objets :  
+    - Grande pieces
 #### Animations du personnage:  
     - Animation static droite  
     - Animation static gauche  

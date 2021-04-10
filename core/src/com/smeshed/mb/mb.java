@@ -14,6 +14,8 @@ import com.badlogic.gdx.math.Rectangle;
 import com.smeshed.mb.Character.CharacterEtat;
 import com.smeshed.mb.Character.CharacterFacing;
 import com.smeshed.mb.Mob.MobType;
+import com.smeshed.mb.Objects.Coin;
+import com.smeshed.mb.Objects.Coin.CoinType;
 
 public class mb extends ApplicationAdapter {
 	private SpriteBatch batch;
@@ -25,7 +27,8 @@ public class mb extends ApplicationAdapter {
 	private float stateTime;
 	private MapObjects collisionObjects;
 	private Coordonnees initialBeforeJumpCoordonnees;
-	private Goomba goomba;
+	// private Goomba goomba;
+	// private Coin c0;
 
 	private int jumpHeight;
 
@@ -35,7 +38,8 @@ public class mb extends ApplicationAdapter {
 		drawCamera();
 		mario = new Character(20, 24, 180, 250);
 		map01 = new Map("./maps/map1-1.tmx", 192);
-		goomba = new Goomba(180, 700, 20, 24, MobType.GOOMBA, false);
+		// goomba = new Goomba(180, 700, 20, 24, MobType.GOOMBA, false);
+		// c0 = new Coin(CoinType.GIANT_COIN, 180, 350, 24, 24);
 		collisionObjects = map01.getCollisionTile(2);
 		tiledMapRenderer = map01.getTiledMapRenderer();
 	}
@@ -50,8 +54,9 @@ public class mb extends ApplicationAdapter {
 		batch.begin();
 
 		mario.draw(batch, stateTime);
-		goomba.draw(batch, stateTime);
-		goomba.move(mario.getEtat(), mario.getFacing(), jumpHeight);
+		// goomba.draw(batch, stateTime);
+		// goomba.move(mario.getEtat(), mario.getFacing(), jumpHeight);
+		// c0.draw(batch, stateTime);
 		mario.isDead();
 		keyPressed();
 		camera.update();
@@ -65,7 +70,6 @@ public class mb extends ApplicationAdapter {
 
 	private void keyPressed() {
 		Rectangle hitbox = mario.getHitbox();
-		System.out.println("68 " + mario.getEtat());
 
 		if (Gdx.input.isKeyPressed(Keys.LEFT))
 			// ! vers la gauche
@@ -74,7 +78,6 @@ public class mb extends ApplicationAdapter {
 			// ! vers la droite
 			mario.setFacing(CharacterFacing.RIGHT);
 		}
-		System.out.println("57 " + mario.getEtat());
 
 		if ((Gdx.input.isKeyPressed(Keys.LEFT) || Gdx.input.isKeyPressed(Keys.RIGHT))
 				&& !Gdx.input.isKeyPressed(Keys.CONTROL_LEFT) && mario.getEtat() != CharacterEtat.JUMPWALK
@@ -83,7 +86,6 @@ public class mb extends ApplicationAdapter {
 			mario.setEtat(CharacterEtat.WALK);
 			walk(hitbox);
 		}
-		System.out.println("85 " + mario.getEtat());
 
 		if (Gdx.input.isKeyPressed(Keys.CONTROL_LEFT)
 				&& (Gdx.input.isKeyPressed(Keys.LEFT) || Gdx.input.isKeyPressed(Keys.RIGHT))
@@ -93,7 +95,6 @@ public class mb extends ApplicationAdapter {
 			mario.setEtat(CharacterEtat.RUN);
 			run(hitbox);
 		}
-		System.out.println("93 " + mario.getEtat());
 
 		if (!Gdx.input.isKeyPressed(Keys.RIGHT) && !Gdx.input.isKeyPressed(Keys.LEFT)
 				&& !Gdx.input.isKeyPressed(Keys.UP) && !Gdx.input.isKeyPressed(Keys.DOWN)
@@ -103,7 +104,6 @@ public class mb extends ApplicationAdapter {
 			mario.setEtat(CharacterEtat.STATIC);
 			statiq(hitbox);
 		}
-		System.out.println("101 " + mario.getEtat());
 
 		if (mario.getEtat() != CharacterEtat.FALL) {
 			if (Gdx.input.isKeyPressed(Keys.UP)) {
