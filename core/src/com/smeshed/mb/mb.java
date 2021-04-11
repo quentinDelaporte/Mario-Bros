@@ -7,9 +7,11 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.MapObjects;
+import com.badlogic.gdx.maps.objects.PolygonMapObject;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.math.Intersector;
+import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
 import com.smeshed.mb.Entity.Character.CharacterEtat;
 import com.smeshed.mb.Entity.Character.CharacterFacing;
@@ -32,7 +34,8 @@ public class mb extends ApplicationAdapter {
 	private Map map01;
 	private float stateTime;
 	private MapObjects collisionObjects;
-	private Coordonnees initialBeforeJumpCoordonnees;
+	private Coordonnees initialBeforeJumpCoordonnees, initialBeforeFallCoordonnees;
+	private int minCameraY = 0;
 	// private Goomba goomba;
 	// private Coin c0;
 	private int jumpHeight;
@@ -141,6 +144,9 @@ public class mb extends ApplicationAdapter {
 			if (!deadSoundPlayed) {
 				AmbiantSound s2 = new AmbiantSound(1f, "./song/smb_mariodie.wav");
 				deadSoundPlayed = true;
+				m.setVolume(0f);
+				m = null;
+				// mario = null;
 			}
 		}
 		gravity();
@@ -165,31 +171,57 @@ public class mb extends ApplicationAdapter {
 				return true;
 			}
 		}
+		for (PolygonMapObject polygonObject : collisionObjects.getByType(PolygonMapObject.class)) {
+			Polygon polygon = polygonObject.getPolygon();
+			Polygon hitboxPolygon = new Polygon(new float[] { hitbox.x, hitbox.y, hitbox.x + hitbox.width, hitbox.y,
+					hitbox.x + hitbox.width, hitbox.y + hitbox.height, hitbox.x, hitbox.y + hitbox.height });
+
+			if (Intersector.overlapConvexPolygons(polygon, hitboxPolygon)) {
+				return true;
+			}
+		}
 		return false;
+
 	}
 
 	public void gravity() {
 		// ? Implémenter vitesse de chute
+		if (mario.getEtat() != CharacterEtat.FALL) {
+			initialBeforeFallCoordonnees = new Coordonnees(mario.getX(), mario.getY());
+			System.out.println(initialBeforeFallCoordonnees.getX() + " - " + initialBeforeFallCoordonnees.getY());
+		}
+
 		if (mario.getEtat() != CharacterEtat.JUMP && mario.getEtat() != CharacterEtat.JUMPRUN
 				&& mario.getEtat() != CharacterEtat.JUMPWALK) {
 			Rectangle hitbox = mario.getHitbox();
 			hitbox.y -= 4;
 			if (!collisionDetectionWithMap(hitbox)) {
 				mario.setEtat(CharacterEtat.FALL);
-				camera.position.y = camera.position.y - 4;
-				mario.setY(mario.getY() - 4);
+				System.out.println("fall !");
+				if (mario.getY() > initialBeforeFallCoordonnees.getY() - 16 * 0.7 * mario.getJumpHeight()) {
+					camera.position.y = (float) (camera.position.y > minCameraY ? camera.position.y - 2
+							: camera.position.y);
+					mario.setY((float) (mario.getY() - 2));
+				} else if (mario.getY() > initialBeforeFallCoordonnees.getY() - 16 * 0.5 * mario.getJumpHeight()) {
+					camera.position.y = camera.position.y > minCameraY ? camera.position.y - 3 : camera.position.y;
+					mario.setY(mario.getY() - 3);
+				} else {
+					camera.position.y = camera.position.y > minCameraY ? camera.position.y - 4 : camera.position.y;
+					mario.setY(mario.getY() - 4);
+				}
+
 			}
 			if (collisionDetectionWithMap(hitbox) && (mario.getEtat() == CharacterEtat.FALL)) {
 				mario.setEtat(CharacterEtat.STATIC);
 			}
 
 		}
+
 	}
 
 	public void jump() {
 		// ? Patch: Si pas de collision en dessou ==> pas de saut : Creer hitbox et
 		// ? tester la collision de la positon future
-		double hauteur = 2.5;
 		if (mario.getEtat() != CharacterEtat.JUMP && mario.getEtat() != CharacterEtat.JUMPWALK
 				&& mario.getEtat() != CharacterEtat.JUMPRUN) {
 			initialBeforeJumpCoordonnees = new Coordonnees(mario.getX(), mario.getY());
@@ -216,20 +248,20 @@ public class mb extends ApplicationAdapter {
 				}
 			}
 
-			if (mario.getY() <= initialBeforeJumpCoordonnees.getY() + 16 * hauteur) {
-				if (mario.getY() <= initialBeforeJumpCoordonnees.getY() + 16 * 0.3 * hauteur) {
+			if (mario.getY() <= initialBeforeJumpCoordonnees.getY() + 16 * mario.getJumpHeight()) {
+				if (mario.getY() <= initialBeforeJumpCoordonnees.getY() + 16 * 0.3 * mario.getJumpHeight()) {
 					jumpHeight = 4;
 					camera.position.y = camera.position.y + 4;
 					mario.setY(mario.getY() + 4);
-				} else if (mario.getY() <= initialBeforeJumpCoordonnees.getY() + 16 * 0.5 * hauteur) {
+				} else if (mario.getY() <= initialBeforeJumpCoordonnees.getY() + 16 * 0.5 * mario.getJumpHeight()) {
 					jumpHeight = 2;
 					camera.position.y = camera.position.y + 2;
 					mario.setY(mario.getY() + 2);
-				} else if (mario.getY() <= initialBeforeJumpCoordonnees.getY() + 16 * 0.7 * hauteur) {
+				} else if (mario.getY() <= initialBeforeJumpCoordonnees.getY() + 16 * 0.7 * mario.getJumpHeight()) {
 					jumpHeight = 1;
 					camera.position.y = camera.position.y + 1;
 					mario.setY(mario.getY() + 1);
-				} else if (mario.getY() <= initialBeforeJumpCoordonnees.getY() + 16 * hauteur) {
+				} else if (mario.getY() <= initialBeforeJumpCoordonnees.getY() + 16 * mario.getJumpHeight()) {
 					camera.position.y = (float) (camera.position.y + 0.5);
 					mario.setY(mario.getY() + (float) 0.5);
 				}

@@ -17,9 +17,10 @@ public class Character {
     private CharacterFacing facing;
     private Anim marioStaticLeft, marioStaticRight, marioWalkRight, marioWalkLeft, marioJumpLeft, marioJumpRight,
             marioRunLeft, marioRunRight;
+    private final double jumpHeight = 3.5;
 
     public enum CharacterEtat {
-        STATIC, JUMPRUN, JUMP, JUMPWALK, WALK, RUN, FALL, DEAD;
+        STATIC, JUMPRUN, JUMP, JUMPWALK, WALK, RUN, FALL, FALLWALK, FALLRUN, DEAD;
     }
 
     public enum CharacterFacing {
@@ -167,7 +168,6 @@ public class Character {
     }
 
     public boolean isDead() {
-        System.out.println(y);
         if (y < 0) {
 
             etat = CharacterEtat.DEAD;
@@ -175,4 +175,9 @@ public class Character {
         }
         return false;
     }
+
+    public double getJumpHeight() {
+        return jumpHeight;
+    }
+
 }

@@ -16,7 +16,9 @@ public class BackgroundMusic {
 
     }
 
-    public void changeVolume(float volume) {
+    public void setVolume(float volume) {
         this.volume = volume;
+        menuMusic.setVolume(this.volume);
+
     }
 }

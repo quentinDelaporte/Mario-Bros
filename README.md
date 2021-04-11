@@ -10,6 +10,7 @@
 - Collisions avec la map  
 - Saut (sur place, en marchant, en courant)  
 - Vitesse incrémentale du saut  
+- Vitesse décrémentale de la chute  
 - Minuteur
 - Entitée: mob:  
     - Goomba  
@@ -38,6 +39,11 @@
     + 2/tick de 30% à 50% du saut  
     + 1/tick de 50% à 70% du saut  
     + 0.5/tick jusqu'à la fin du saut  
+
+#### Vitesse décrémentale de la chute:  
+    - 2/tick jusqu'à 30% de la chute  
+    - 3/tick de 30% à 50% de la chute  
+    - 4/tick jusqu'à la fin de la chute  
   
     
 ```
