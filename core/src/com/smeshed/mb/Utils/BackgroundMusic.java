@@ -7,9 +7,9 @@ public class BackgroundMusic {
     private Music menuMusic;
     private float volume;
 
-    public BackgroundMusic(float volume) {
+    public BackgroundMusic(float volume, String path) {
         this.volume = volume;
-        menuMusic = Gdx.audio.newMusic(Gdx.files.internal("./song/music/1-1.mp3"));
+        menuMusic = Gdx.audio.newMusic(Gdx.files.internal(path));
         menuMusic.setLooping(true);
         menuMusic.setVolume(this.volume);
         menuMusic.play();
@@ -19,6 +19,12 @@ public class BackgroundMusic {
     public void setVolume(float volume) {
         this.volume = volume;
         menuMusic.setVolume(this.volume);
+
+    }
+
+    public void stop() {
+        menuMusic.setVolume(0f);
+        menuMusic.stop();
 
     }
 }
