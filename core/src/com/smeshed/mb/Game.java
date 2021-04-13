@@ -18,7 +18,7 @@ import com.smeshed.mb.Entity.Character.CharacterFacing;
 import com.smeshed.mb.Entity.Character;
 import com.smeshed.mb.Entity.Goomba;
 import com.smeshed.mb.GUI.Gui;
-import com.smeshed.mb.GUI.TimerParty;
+import com.smeshed.mb.GUI.Parameter;
 import com.smeshed.mb.Entity.Mob.MobType;
 import com.smeshed.mb.Objects.Coin;
 import com.smeshed.mb.Objects.Coin.CoinType;
@@ -47,6 +47,7 @@ public class Game extends ApplicationAdapter {
 	private Texture backgroundImg;
 	private boolean gameStarted = false;
 	private float volume = 1f;
+	private Parameter parameter;
 
 	@Override
 	public void create() {
@@ -60,6 +61,7 @@ public class Game extends ApplicationAdapter {
 		c0 = new Coin(CoinType.GIANT_COIN, 180, 350, 24, 24);
 		collisionObjects = map01.getCollisionTile(2);
 		tiledMapRenderer = map01.getTiledMapRenderer();
+		parameter = new Parameter();
 	}
 
 	@Override
@@ -103,52 +105,57 @@ public class Game extends ApplicationAdapter {
 		CharacterEtat lastEtat = mario.getEtat();
 
 		if (mario.getEtat() != CharacterEtat.DEAD) {
-			if (Gdx.input.isKeyPressed(Keys.LEFT))
+			if (Gdx.input.isKeyPressed(parameter.getLeftKey()))
 				// ! vers la gauche
 				mario.setFacing(CharacterFacing.LEFT);
-			else if (Gdx.input.isKeyPressed(Keys.RIGHT)) {
+			else if (Gdx.input.isKeyPressed(parameter.getRightKey())) {
 				// ! vers la droite
 				mario.setFacing(CharacterFacing.RIGHT);
 			}
 
-			if ((Gdx.input.isKeyPressed(Keys.LEFT) || Gdx.input.isKeyPressed(Keys.RIGHT))
-					&& !Gdx.input.isKeyPressed(Keys.CONTROL_LEFT) && mario.getEtat() != CharacterEtat.JUMPWALK
-					&& mario.getEtat() != CharacterEtat.JUMPRUN && mario.getEtat() != CharacterEtat.FALL) {
+			if ((Gdx.input.isKeyPressed(parameter.getLeftKey()) || Gdx.input.isKeyPressed(parameter.getRightKey()))
+					&& !Gdx.input.isKeyPressed(parameter.getRunKey()) && mario.getEtat() != CharacterEtat.JUMPWALK
+					&& mario.getEtat() != CharacterEtat.JUMPRUN && mario.getEtat() != CharacterEtat.FALL
+					&& mario.getEtat() != CharacterEtat.FALLWALK && mario.getEtat() != CharacterEtat.FALLRUN) {
 				// ! Marche
 				mario.setEtat(CharacterEtat.WALK);
-				walk(hitbox);
+				walk();
 			}
 
-			if (Gdx.input.isKeyPressed(Keys.CONTROL_LEFT)
-					&& (Gdx.input.isKeyPressed(Keys.LEFT) || Gdx.input.isKeyPressed(Keys.RIGHT))
+			if (Gdx.input.isKeyPressed(parameter.getRunKey())
+					&& (Gdx.input.isKeyPressed(parameter.getLeftKey())
+							|| Gdx.input.isKeyPressed(parameter.getRightKey()))
 					&& mario.getEtat() != CharacterEtat.JUMPWALK && mario.getEtat() != CharacterEtat.JUMPRUN
-					&& mario.getEtat() != CharacterEtat.FALL) {
+					&& mario.getEtat() != CharacterEtat.FALL && mario.getEtat() != CharacterEtat.FALLWALK
+					&& mario.getEtat() != CharacterEtat.FALLRUN) {
 				// ! Course
 				mario.setEtat(CharacterEtat.RUN);
-				run(hitbox);
+				run();
 			}
 
-			if (!Gdx.input.isKeyPressed(Keys.RIGHT) && !Gdx.input.isKeyPressed(Keys.LEFT)
-					&& !Gdx.input.isKeyPressed(Keys.UP) && !Gdx.input.isKeyPressed(Keys.DOWN)
+			if (!Gdx.input.isKeyPressed(parameter.getRightKey()) && !Gdx.input.isKeyPressed(parameter.getLeftKey())
+					&& !Gdx.input.isKeyPressed(parameter.getUpKey()) && !Gdx.input.isKeyPressed(parameter.getDownKey())
 					&& mario.getEtat() != CharacterEtat.JUMPWALK && mario.getEtat() != CharacterEtat.JUMPRUN
-					&& mario.getEtat() != CharacterEtat.FALL) {
+					&& mario.getEtat() != CharacterEtat.FALL && mario.getEtat() != CharacterEtat.FALLRUN
+					&& mario.getEtat() != CharacterEtat.FALLWALK) {
 				// ! Static
 				mario.setEtat(CharacterEtat.STATIC);
-				statiq(hitbox);
 			}
 
-			if (mario.getEtat() != CharacterEtat.FALL) {
-				if (Gdx.input.isKeyPressed(Keys.UP)) {
+			if (mario.getEtat() != CharacterEtat.FALL && mario.getEtat() != CharacterEtat.FALLWALK
+					&& mario.getEtat() != CharacterEtat.FALLRUN) {
+				if (Gdx.input.isKeyPressed(parameter.getUpKey())) {
 					if (lastEtat != CharacterEtat.JUMP && lastEtat != CharacterEtat.JUMPWALK
 							&& lastEtat != CharacterEtat.JUMPRUN) {
 						AmbiantSound s = new AmbiantSound(volume, "./song/smb_jump-small.wav");
 
 					}
-					if (Gdx.input.isKeyPressed(Keys.CONTROL_LEFT)
-							&& (Gdx.input.isKeyPressed(Keys.LEFT) || Gdx.input.isKeyPressed(Keys.RIGHT))) {
+					if (Gdx.input.isKeyPressed(parameter.getRunKey()) && (Gdx.input.isKeyPressed(parameter.getLeftKey())
+							|| Gdx.input.isKeyPressed(parameter.getRightKey()))) {
 						// ! Saut en courant
 						mario.setEtat(CharacterEtat.JUMPRUN);
-					} else if ((Gdx.input.isKeyPressed(Keys.LEFT) || Gdx.input.isKeyPressed(Keys.RIGHT))) {
+					} else if ((Gdx.input.isKeyPressed(parameter.getLeftKey())
+							|| Gdx.input.isKeyPressed(parameter.getRightKey()))) {
 						// ! Saut en marchant
 						mario.setEtat(CharacterEtat.JUMPWALK);
 					} else {
@@ -160,17 +167,25 @@ public class Game extends ApplicationAdapter {
 		} else {
 			if (!deadSoundPlayed) {
 				AmbiantSound s2 = new AmbiantSound(volume, "./song/smb_mariodie.wav");
+				System.out.println("fin");
+				try {
+					sleep(2.7);
+				} catch (InterruptedException e) {
+					System.out.println("Le thread ne peut pas être mis en pause !");
+				}
 				deadSoundPlayed = true;
 				musicStage1.stop();
 				gameStarted = false;
 				musicMenu = new BackgroundMusic(volume, "./song/music/main.mp3");
-
-				// mario = null;
 			}
 		}
 		gravity();
 		jump();
 
+	}
+
+	private void sleep(double second) throws InterruptedException {
+		Thread.sleep((int) (second * 1000));
 	}
 
 	private void drawCamera() {
@@ -181,8 +196,6 @@ public class Game extends ApplicationAdapter {
 		camera.update();
 	}
 
-	// TODO: Gérer autres formes que carré.
-	// ? Polygon / Losanges / triangles
 	public boolean collisionDetectionWithMap(Rectangle hitbox) {
 		for (RectangleMapObject rectangleObject : collisionObjects.getByType(RectangleMapObject.class)) {
 			Rectangle rectangle = rectangleObject.getRectangle();
@@ -204,8 +217,8 @@ public class Game extends ApplicationAdapter {
 	}
 
 	public void gravity() {
-		// ? Implémenter vitesse de chute
-		if (mario.getEtat() != CharacterEtat.FALL) {
+		if (mario.getEtat() != CharacterEtat.FALL && mario.getEtat() != CharacterEtat.FALLWALK
+				&& mario.getEtat() != CharacterEtat.FALLRUN) {
 			initialBeforeFallCoordonnees = new Coordonnees(mario.getX(), mario.getY());
 			System.out.println(initialBeforeFallCoordonnees.getX() + " - " + initialBeforeFallCoordonnees.getY());
 		}
@@ -215,8 +228,8 @@ public class Game extends ApplicationAdapter {
 			Rectangle hitbox = mario.getHitbox();
 			hitbox.y -= 4;
 			if (!collisionDetectionWithMap(hitbox)) {
-				mario.setEtat(CharacterEtat.FALL);
-				System.out.println("fall !");
+
+				System.out.println(mario.getEtat());
 				if (mario.getY() > initialBeforeFallCoordonnees.getY() - 16 * 0.7 * mario.getJumpHeight()) {
 					camera.position.y = (float) (camera.position.y > minCameraY ? camera.position.y - 2
 							: camera.position.y);
@@ -229,8 +242,31 @@ public class Game extends ApplicationAdapter {
 					mario.setY(mario.getY() - 4);
 				}
 
+				if (mario.getEtat() == CharacterEtat.FALLWALK) {
+					if (mario.getFacing() == CharacterFacing.LEFT) {
+						camera.position.x = camera.position.x - 2;
+						mario.setX(mario.getX() - 2);
+						mario.setFacing(CharacterFacing.LEFT);
+					} else if (mario.getFacing() == CharacterFacing.RIGHT) {
+						camera.position.x = camera.position.x + 2;
+						mario.setX(mario.getX() + 2);
+						mario.setFacing(CharacterFacing.RIGHT);
+					}
+				} else if (mario.getEtat() == CharacterEtat.FALLRUN) {
+					if (mario.getFacing() == CharacterFacing.LEFT) {
+						camera.position.x = camera.position.x - 4;
+						mario.setX(mario.getX() - 4);
+						mario.setFacing(CharacterFacing.LEFT);
+					} else if (mario.getFacing() == CharacterFacing.RIGHT) {
+						camera.position.x = camera.position.x + 4;
+						mario.setX(mario.getX() + 4);
+						mario.setFacing(CharacterFacing.RIGHT);
+					}
+				}
+
 			}
-			if (collisionDetectionWithMap(hitbox) && (mario.getEtat() == CharacterEtat.FALL)) {
+			if (collisionDetectionWithMap(hitbox) && (mario.getEtat() == CharacterEtat.FALL
+					|| mario.getEtat() == CharacterEtat.FALLWALK || mario.getEtat() == CharacterEtat.FALLRUN)) {
 				mario.setEtat(CharacterEtat.STATIC);
 			}
 
@@ -239,32 +275,14 @@ public class Game extends ApplicationAdapter {
 	}
 
 	public void jump() {
-		// ? Patch: Si pas de collision en dessou ==> pas de saut : Creer hitbox et
-		// ? tester la collision de la positon future
 		if (mario.getEtat() != CharacterEtat.JUMP && mario.getEtat() != CharacterEtat.JUMPWALK
 				&& mario.getEtat() != CharacterEtat.JUMPRUN) {
 			initialBeforeJumpCoordonnees = new Coordonnees(mario.getX(), mario.getY());
 		} else {
 			if (mario.getEtat() == CharacterEtat.JUMPWALK) {
-				if (mario.getFacing() == CharacterFacing.LEFT) {
-					camera.position.x = camera.position.x - 2;
-					mario.setX(mario.getX() - 2);
-					mario.setFacing(CharacterFacing.LEFT);
-				} else if (mario.getFacing() == CharacterFacing.RIGHT) {
-					camera.position.x = camera.position.x + 2;
-					mario.setX(mario.getX() + 2);
-					mario.setFacing(CharacterFacing.RIGHT);
-				}
+				walk();
 			} else if (mario.getEtat() == CharacterEtat.JUMPRUN) {
-				if (mario.getFacing() == CharacterFacing.LEFT) {
-					camera.position.x = camera.position.x - 4;
-					mario.setX(mario.getX() - 4);
-					mario.setFacing(CharacterFacing.LEFT);
-				} else if (mario.getFacing() == CharacterFacing.RIGHT) {
-					camera.position.x = camera.position.x + 4;
-					mario.setX(mario.getX() + 4);
-					mario.setFacing(CharacterFacing.RIGHT);
-				}
+				run();
 			}
 
 			if (mario.getY() <= initialBeforeJumpCoordonnees.getY() + 16 * mario.getJumpHeight()) {
@@ -286,16 +304,20 @@ public class Game extends ApplicationAdapter {
 				}
 
 			} else {
-				mario.setEtat(CharacterEtat.FALL);
+				if ((Gdx.input.isKeyPressed(parameter.getLeftKey()) || Gdx.input.isKeyPressed(parameter.getRightKey()))
+						&& !Gdx.input.isKeyPressed(parameter.getRunKey()))
+					mario.setEtat(CharacterEtat.FALLWALK);
+				else if (Gdx.input.isKeyPressed(parameter.getRunKey()))
+					mario.setEtat(CharacterEtat.FALLRUN);
+				else
+					mario.setEtat(CharacterEtat.FALL);
 			}
 		}
-		// ? Progression du saut
-		// ? ((mario.getY() - intialBeforeJumpCoordonnees.getY()) / 100 + 0.5)
-		// TODO : Debut fall apres un saut : tester si arrivé au sol -> mettre sur
-		// TODO : STATIC
 	}
 
-	public void run(Rectangle hitbox) {
+	public void run() {
+		Rectangle hitbox = mario.getHitbox();
+
 		if (mario.getFacing() == CharacterFacing.RIGHT) {
 			hitbox.x += 4;
 			if (!collisionDetectionWithMap(hitbox)) {
@@ -317,7 +339,8 @@ public class Game extends ApplicationAdapter {
 		}
 	}
 
-	public void walk(Rectangle hitbox) {
+	public void walk() {
+		Rectangle hitbox = mario.getHitbox();
 		if (Gdx.input.isKeyPressed(Keys.LEFT)) {
 			hitbox.x -= 2;
 			if (!collisionDetectionWithMap(hitbox)) {
@@ -337,18 +360,6 @@ public class Game extends ApplicationAdapter {
 					mario.setEtat(CharacterEtat.WALK);
 			}
 		}
-	}
-
-	public void fallRun(Rectangle hitbox) {
-
-	}
-
-	public void fallWalk(Rectangle hitbox) {
-
-	}
-
-	public void statiq(Rectangle hitbox) {
-
 	}
 
 	private void drawMenu() {

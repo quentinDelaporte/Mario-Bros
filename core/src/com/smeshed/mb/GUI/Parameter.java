@@ -33,4 +33,52 @@ public class Parameter {
 
     }
 
+    public int getVolume() {
+        return volume;
+    }
+
+    public void setVolume(int volume) {
+        this.volume = volume;
+    }
+
+    public int getLeftKey() {
+        return left;
+    }
+
+    public void setLeftKey(int left) {
+        this.left = left;
+    }
+
+    public int getRightKey() {
+        return right;
+    }
+
+    public void setRightKey(int right) {
+        this.right = right;
+    }
+
+    public int getUpKey() {
+        return up;
+    }
+
+    public void setUpKey(int up) {
+        this.up = up;
+    }
+
+    public int getDownKey() {
+        return down;
+    }
+
+    public void setDownKey(int down) {
+        this.down = down;
+    }
+
+    public int getRunKey() {
+        return run;
+    }
+
+    public void setRunKey(int run) {
+        this.run = run;
+    }
+
 }

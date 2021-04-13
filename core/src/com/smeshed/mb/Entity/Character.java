@@ -118,6 +118,14 @@ public class Character {
         case DEAD:
             break;
         case FALL:
+            switch (facing) {
+            case LEFT:
+                batch.draw(marioWalkLeft.getAnimation(stateTime), initialX, initialY, this.width, this.height);
+                break;
+            case RIGHT:
+                batch.draw(marioWalkRight.getAnimation(stateTime), initialX, initialY, this.width, this.height);
+                break;
+            }
             break;
         }
 
@@ -169,7 +177,7 @@ public class Character {
 
     public boolean isDead() {
         if (y < 0) {
-            
+
             etat = CharacterEtat.DEAD;
             return true;
         }
