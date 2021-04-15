@@ -17,11 +17,11 @@ import com.smeshed.mb.Entity.Character.CharacterEtat;
 import com.smeshed.mb.Entity.Character.CharacterFacing;
 import com.smeshed.mb.Entity.Character;
 import com.smeshed.mb.Entity.Goomba;
+import com.smeshed.mb.Entity.BigCoin;
 import com.smeshed.mb.GUI.Gui;
 import com.smeshed.mb.GUI.Parameter;
-import com.smeshed.mb.Entity.Mob.MobType;
-import com.smeshed.mb.Objects.Coin;
-import com.smeshed.mb.Objects.Coin.CoinType;
+import com.smeshed.mb.Entity.Mob.EntityEtat;
+import com.smeshed.mb.Entity.Mob.EntityType;
 import com.smeshed.mb.Utils.AmbiantSound;
 import com.smeshed.mb.Utils.BackgroundMusic;
 import com.badlogic.gdx.graphics.Texture;
@@ -39,8 +39,8 @@ public class Game extends ApplicationAdapter {
 	private Coordonnees initialBeforeJumpCoordonnees, initialBeforeFallCoordonnees;
 	private int minCameraY = 0;
 	private Goomba goomba;
-	private Coin c0;
-	private int jumpHeight;
+	private BigCoin c0;
+	private double jumpHeight;
 	private Gui gui;
 	private BackgroundMusic musicMenu, musicStage1;
 	private boolean deadSoundPlayed = false;
@@ -57,8 +57,8 @@ public class Game extends ApplicationAdapter {
 		map01 = new Map("./maps/map1-1.tmx");
 		musicMenu = new BackgroundMusic(volume, "./song/music/main.mp3");
 		backgroundImg = new Texture(Gdx.files.internal("./images/titleScreen/menu.jpg"));
-		goomba = new Goomba(180, 700, 20, 24, MobType.GOOMBA, false);
-		c0 = new Coin(CoinType.GIANT_COIN, 180, 350, 24, 24);
+		goomba = new Goomba(180, 400, 20, 24, EntityType.GOOMBA, false);
+		c0 = new BigCoin(300, 700, 24, 24, EntityType.BIG_COIN, false, false);
 		collisionObjects = map01.getCollisionTile(2);
 		tiledMapRenderer = map01.getTiledMapRenderer();
 		parameter = new Parameter();
@@ -76,9 +76,10 @@ public class Game extends ApplicationAdapter {
 		if (gameStarted) {
 			mario.draw(batch, stateTime);
 			gui.draw(batch);
-			// goomba.draw(batch, stateTime);
-			// goomba.move(mario.getEtat(), mario.getFacing(), jumpHeight);
-			// c0.draw(batch, stateTime);
+			goomba.move(mario.getEtat(), mario.getFacing(), jumpHeight);
+			goomba.draw(batch, stateTime);
+			c0.move(mario.getEtat(), mario.getFacing(), jumpHeight);
+			c0.draw(batch, stateTime);
 			mario.isDead();
 			keyPressed();
 		} else {
@@ -167,7 +168,6 @@ public class Game extends ApplicationAdapter {
 		} else {
 			if (!deadSoundPlayed) {
 				AmbiantSound s2 = new AmbiantSound(volume, "./song/smb_mariodie.wav");
-				System.out.println("fin");
 				try {
 					sleep(2.7);
 				} catch (InterruptedException e) {
@@ -220,7 +220,6 @@ public class Game extends ApplicationAdapter {
 		if (mario.getEtat() != CharacterEtat.FALL && mario.getEtat() != CharacterEtat.FALLWALK
 				&& mario.getEtat() != CharacterEtat.FALLRUN) {
 			initialBeforeFallCoordonnees = new Coordonnees(mario.getX(), mario.getY());
-			System.out.println(initialBeforeFallCoordonnees.getX() + " - " + initialBeforeFallCoordonnees.getY());
 		}
 
 		if (mario.getEtat() != CharacterEtat.JUMP && mario.getEtat() != CharacterEtat.JUMPRUN
@@ -233,12 +232,15 @@ public class Game extends ApplicationAdapter {
 				if (mario.getY() > initialBeforeFallCoordonnees.getY() - 16 * 0.7 * mario.getJumpHeight()) {
 					camera.position.y = (float) (camera.position.y > minCameraY ? camera.position.y - 2
 							: camera.position.y);
+					jumpHeight = 2;
 					mario.setY((float) (mario.getY() - 2));
 				} else if (mario.getY() > initialBeforeFallCoordonnees.getY() - 16 * 0.5 * mario.getJumpHeight()) {
 					camera.position.y = camera.position.y > minCameraY ? camera.position.y - 3 : camera.position.y;
+					jumpHeight = 3;
 					mario.setY(mario.getY() - 3);
 				} else {
 					camera.position.y = camera.position.y > minCameraY ? camera.position.y - 4 : camera.position.y;
+					jumpHeight = 4;
 					mario.setY(mario.getY() - 4);
 				}
 
@@ -246,21 +248,17 @@ public class Game extends ApplicationAdapter {
 					if (mario.getFacing() == CharacterFacing.LEFT) {
 						camera.position.x = camera.position.x - 2;
 						mario.setX(mario.getX() - 2);
-						mario.setFacing(CharacterFacing.LEFT);
 					} else if (mario.getFacing() == CharacterFacing.RIGHT) {
 						camera.position.x = camera.position.x + 2;
 						mario.setX(mario.getX() + 2);
-						mario.setFacing(CharacterFacing.RIGHT);
 					}
 				} else if (mario.getEtat() == CharacterEtat.FALLRUN) {
 					if (mario.getFacing() == CharacterFacing.LEFT) {
 						camera.position.x = camera.position.x - 4;
 						mario.setX(mario.getX() - 4);
-						mario.setFacing(CharacterFacing.LEFT);
 					} else if (mario.getFacing() == CharacterFacing.RIGHT) {
 						camera.position.x = camera.position.x + 4;
 						mario.setX(mario.getX() + 4);
-						mario.setFacing(CharacterFacing.RIGHT);
 					}
 				}
 
@@ -299,6 +297,7 @@ public class Game extends ApplicationAdapter {
 					camera.position.y = camera.position.y + 1;
 					mario.setY(mario.getY() + 1);
 				} else if (mario.getY() <= initialBeforeJumpCoordonnees.getY() + 16 * mario.getJumpHeight()) {
+					jumpHeight = 0.5;
 					camera.position.y = (float) (camera.position.y + 0.5);
 					mario.setY(mario.getY() + (float) 0.5);
 				}
@@ -307,8 +306,11 @@ public class Game extends ApplicationAdapter {
 				if ((Gdx.input.isKeyPressed(parameter.getLeftKey()) || Gdx.input.isKeyPressed(parameter.getRightKey()))
 						&& !Gdx.input.isKeyPressed(parameter.getRunKey()))
 					mario.setEtat(CharacterEtat.FALLWALK);
-				else if (Gdx.input.isKeyPressed(parameter.getRunKey()))
+				else if (Gdx.input.isKeyPressed(parameter.getRunKey())
+						&& (Gdx.input.isKeyPressed(parameter.getLeftKey())
+								|| Gdx.input.isKeyPressed(parameter.getRightKey())))
 					mario.setEtat(CharacterEtat.FALLRUN);
+
 				else
 					mario.setEtat(CharacterEtat.FALL);
 			}

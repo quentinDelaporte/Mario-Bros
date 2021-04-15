@@ -1,79 +1,127 @@
 package com.smeshed.mb.Entity;
 
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
+import com.smeshed.mb.Entity.Character.CharacterEtat;
+import com.smeshed.mb.Entity.Character.CharacterFacing;
+import com.smeshed.mb.Utils.Coordonnees;
 
-public class Mob {
-    private float y;
-    private float x;
-    private float initialX;
-    private float initialY;
-    private int width;
-    private int height;
+public abstract class Mob {
+    private double y;
+    private double x;
+    private double initialX;
+    private double initialY;
+    private double width;
+    private double height;
     private Rectangle hitbox;
-    private MobType mob;
-    private MobEtat etat;
-    private MobFacing facing;
+    private EntityType mob;
+    private EntityEtat etat;
+    private EntityFacing facing;
     private boolean respawn;
 
-    public enum MobType {
+    public enum EntityType {
         GOOMBA, KOOPA_TROOPA, SHY_GUY, PIRANHA_PLANT, BILL_BALLE, BILL_BOURRIN, BLOOPS, BOB_OMB, BOO, BOOXER,
         CHEEP_CHEEP, CHEEP_CHOMP, CRYO_PIRANHA_PLANT, FRERE_MARTEAU, GRAND_GOOMBA, HERISS, WIGGLER, SKELEREX,
-        SUPER_THWOMP, SWOOPER, THWOMP;
+        SUPER_THWOMP, SWOOPER, THWOMP, BIG_COIN, COIN;
     }
 
-    public enum MobFacing {
+    public enum EntityFacing {
         LEFT, RIGHT;
     }
 
-    public enum MobEtat {
+    public enum EntityEtat {
         STATIC, JUMP, WALK, RUN, FALL, DEAD;
     }
 
-    public Mob(float y, float x, int width, int height, MobType mob, boolean respawn) {
-        this.y = y;
-        this.x = x;
-        this.width = width;
-        this.height = height;
+    public Mob(double y2, double x2, double width2, double height2, EntityType mob, boolean respawn) {
+        this.y = y2;
+        this.x = x2;
+        this.width = width2;
+        this.height = height2;
         this.mob = mob;
         this.respawn = respawn;
-        initialX = x;
-        initialY = y;
-    
+        initialX = x2;
+        initialY = y2;
+
     }
 
-    public float getY() {
+    protected abstract void draw(SpriteBatch batch, float stateTime);
+
+    protected abstract void move(CharacterEtat e, CharacterFacing f, double jumpHeight);
+
+    public Coordonnees antiMarioMove(CharacterEtat e, CharacterFacing f, double jumpHeight) {
+        switch (e) {
+        case WALK:
+            x = (f == CharacterFacing.LEFT) ? x + 2 : x;
+            x = (f == CharacterFacing.RIGHT) ? x - 2 : x;
+            break;
+        case RUN:
+            x = (f == CharacterFacing.LEFT) ? x + 4 : x;
+            x = (f == CharacterFacing.RIGHT) ? x - 4 : x;
+            break;
+        case JUMPWALK:
+            x = (f == CharacterFacing.LEFT) ? x + 2 : x;
+            x = (f == CharacterFacing.RIGHT) ? x - 2 : x;
+            y = y - jumpHeight;
+            break;
+        case JUMPRUN:
+            x = (f == CharacterFacing.LEFT) ? x + 4 : x;
+            x = (f == CharacterFacing.RIGHT) ? x - 4 : x;
+            y = y - jumpHeight;
+            break;
+        case JUMP:
+            y = y - jumpHeight;
+            break;
+        case FALLWALK:
+            x = (f == CharacterFacing.LEFT) ? x + 2 : x;
+            x = (f == CharacterFacing.RIGHT) ? x - 2 : x;
+            y = y + jumpHeight;
+            break;
+        case FALLRUN:
+            x = (f == CharacterFacing.LEFT) ? x + 4 : x;
+            x = (f == CharacterFacing.RIGHT) ? x - 4 : x;
+            y = y + jumpHeight;
+            break;
+        case FALL:
+            y = y + jumpHeight;
+            break;
+        }
+        return new Coordonnees(x, y);
+    }
+
+    public double getY() {
         return y;
     }
 
-    public void setY(float y) {
+    public void setY(double y) {
         this.y = y;
     }
 
-    public float getX() {
+    public double getX() {
         return x;
     }
 
-    public void setX(float x) {
+    public void setX(double x) {
         this.x = x;
     }
 
-    public float getInitialX() {
+    public double getInitialX() {
         return initialX;
     }
 
-    public void setInitialX(float initialX) {
+    public void setInitialX(double initialX) {
         this.initialX = initialX;
     }
 
-    public float getInitialY() {
+    public double getInitialY() {
         return initialY;
     }
 
-    public void setInitialY(float initialY) {
+    public void setInitialY(double initialY) {
         this.initialY = initialY;
     }
 
-    public int getWidth() {
+    public double getWidth() {
         return width;
     }
 
@@ -81,7 +129,7 @@ public class Mob {
         this.width = width;
     }
 
-    public int getHeight() {
+    public double getHeight() {
         return height;
     }
 
@@ -97,27 +145,27 @@ public class Mob {
         this.hitbox = hitbox;
     }
 
-    public MobType getMob() {
+    public EntityType getEntity() {
         return mob;
     }
 
-    public void setMob(MobType mob) {
+    public void setEntity(EntityType mob) {
         this.mob = mob;
     }
 
-    public MobEtat getEtat() {
+    public EntityEtat getEtat() {
         return etat;
     }
 
-    public void setEtat(MobEtat etat) {
+    public void setEtat(EntityEtat etat) {
         this.etat = etat;
     }
 
-    public MobFacing getFacing() {
+    public EntityFacing getFacing() {
         return facing;
     }
 
-    public void setFacing(MobFacing facing) {
+    public void setFacing(EntityFacing facing) {
         this.facing = facing;
     }
 
