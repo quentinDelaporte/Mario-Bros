@@ -243,6 +243,7 @@ public class Game extends ApplicationAdapter {
 					jumpHeight = 4;
 					mario.setY(mario.getY() - 4);
 				}
+				c0.setY(c0.getY() + jumpHeight);// Move to Mob
 
 				if (mario.getEtat() == CharacterEtat.FALLWALK) {
 					if (mario.getFacing() == CharacterFacing.LEFT) {

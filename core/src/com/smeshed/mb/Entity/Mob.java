@@ -72,18 +72,17 @@ public abstract class Mob {
         case JUMP:
             y = y - jumpHeight;
             break;
+        // Revoir chute : Si repasse en static : ex pante : piece y ne diminue pas..
+        // Creer etat spécial ?
         case FALLWALK:
             x = (f == CharacterFacing.LEFT) ? x + 2 : x;
             x = (f == CharacterFacing.RIGHT) ? x - 2 : x;
-            y = y + jumpHeight;
             break;
         case FALLRUN:
             x = (f == CharacterFacing.LEFT) ? x + 4 : x;
             x = (f == CharacterFacing.RIGHT) ? x - 4 : x;
-            y = y + jumpHeight;
             break;
         case FALL:
-            y = y + jumpHeight;
             break;
         }
         return new Coordonnees(x, y);
